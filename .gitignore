@@ -1,0 +1,18 @@
+# Claude Code – lokale, user-spezifische Einstellungen
+.claude/settings.local.json
+
+# Temporäre Dateien und Skripte (projektweit löschbar)
+tmp/
+
+# Dependencies
+node_modules/
+
+# OS-Artefakte
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
