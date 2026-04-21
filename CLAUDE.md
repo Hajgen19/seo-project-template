@@ -30,13 +30,15 @@ Wird ein Skill im konkreten Projekt nicht gebraucht (z.B. kein GA4), kann der Sk
 
 ## MCP-Konfiguration
 
-Die MCP-Server sind in `.claude/settings.local.json` aktiviert:
+Die MCP-Server sind in `.claude/settings.json` **aktiviert** (nicht installiert):
 - `google-ads`
 - `gsc`
 - `google-tag-manager`
 - `ga4-analytics`
 
-Die tatsächlichen Server-Definitionen (Pfade, OAuth-Secrets etc.) werden auf User- oder Projekt-Ebene separat gepflegt. Dieses Repo setzt **keine** MCP-Verbindungen auf – das macht der User pro Projekt.
+**Wichtig:** Diese vier MCP-Server sind **keine öffentlich verfügbaren Pakete**. Es gibt aktuell keinen Marketplace-Eintrag und keine fertigen Installer. Sie müssen zuerst lokal installiert und mit OAuth-Credentials/API-Keys versorgt werden, bevor Skills wie `ga4-reports` funktionieren. Die Aktivierung in `settings.json` lädt nur, was lokal schon existiert – ohne Installation passiert nichts (kein Fehler, aber auch keine Tools).
+
+Dieses Repo setzt **keine** MCP-Verbindungen auf – das macht der User pro Projekt, außerhalb des Repos.
 
 ## Regeln für Änderungen am Vorlage-Repo
 

@@ -31,10 +31,20 @@ Nicht benötigte Skill-Ordner nach dem Setup einfach löschen.
 ## Voraussetzungen
 
 - [Claude Code](https://claude.com/claude-code) CLI (oder Desktop/IDE-Extension)
-- Für `ga4-reports`: [Google Analytics MCP](https://github.com/google-analytics/google-analytics-mcp) eingerichtet
-- Für `google-ads`, `gsc`, `google-tag-manager`: entsprechende MCP-Server auf User- oder Projekt-Ebene konfiguriert
+- Lokal installierte und eingerichtete MCP-Server für `google-ads`, `gsc`, `google-tag-manager` und `ga4-analytics`
 
-Die MCP-Aktivierung (nicht die Server-Konfiguration selbst) ist in `.claude/settings.json` bereits gesetzt:
+### Wichtiger Hinweis zu den MCP-Servern
+
+Die vier im Repo aktivierten MCP-Server (`google-ads`, `gsc`, `google-tag-manager`, `ga4-analytics`) sind **keine öffentlich verfügbaren Pakete** – es gibt aktuell keinen offiziellen Marketplace-Eintrag und keine fertigen Installer-Befehle dafür. Sie müssen **zuerst lokal installiert und konfiguriert** werden, bevor die Skills nutzbar sind. Das umfasst pro Server:
+
+- Quellcode beschaffen (eigenes Repo, Fork, oder Eigenentwicklung)
+- Abhängigkeiten installieren (Python-venv, Node, je nach Implementierung)
+- OAuth-Credentials bzw. API-Keys einrichten (`client_secrets.json`, Token-Files)
+- MCP-Server-Eintrag auf User- oder Projekt-Ebene registrieren (siehe Claude-Code-Doku zu `.mcp.json` / `~/.claude.json`)
+
+Ohne diese Installation triggern die Skills zwar, die MCP-Tool-Calls selbst scheitern aber. Erst danach funktionieren `ga4-reports` und alle anderen datenabhängigen Workflows.
+
+Die **Aktivierung** dieser MCP-Server (nicht die Installation) ist in `.claude/settings.json` bereits vorbereitet:
 
 ```json
 {
@@ -47,6 +57,8 @@ Die MCP-Aktivierung (nicht die Server-Konfiguration selbst) ist in `.claude/sett
   ]
 }
 ```
+
+Das bedeutet: Sobald die Server lokal vorhanden sind, werden sie in diesem Projekt automatisch geladen. Sind sie nicht installiert, bleibt dieser Block wirkungslos (kein Fehler, aber auch keine MCP-Tools).
 
 ## Projektkonventionen
 
