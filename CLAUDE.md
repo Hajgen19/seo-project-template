@@ -2,13 +2,13 @@
 
 Dieses Verzeichnis ist **noch kein Kundenprojekt**, sondern der **Startpunkt eines frisch aus dem Vorlage-Repo gezogenen Projekts**. Es enthält bereits die komplette Skill-Infrastruktur, aber noch keine Kundendaten.
 
-Diese CLAUDE.md wird beim ersten Durchlauf von `project-setup` durch die projektspezifische Variante ersetzt (Vorlage für die neue Fassung: `.claude/skills/project-setup/references/CLAUDE-referenz.md`).
+Diese CLAUDE.md wird beim ersten Durchlauf von [`project-setup`](.claude/skills/project-setup/SKILL.md) durch die projektspezifische Variante ersetzt (Vorlage für die neue Fassung: [`CLAUDE-referenz.md`](.claude/skills/project-setup/references/CLAUDE-referenz.md)).
 
 ## Workflow
 
 1. **Vorlage-Repo klonen:** `git clone <repo-url> neuer-kunde/`
 2. **In den Ordner wechseln** und Claude Code starten
-3. **User-Prompt:** „Lege Projekt für [Kundenname] an" (oder vergleichbar) → triggert den `project-setup`-Skill
+3. **User-Prompt:** „Lege Projekt für [Kundenname] an" (oder vergleichbar) → triggert den [`project-setup`](.claude/skills/project-setup/SKILL.md)-Skill
 4. `project-setup` fragt die Kundendaten ab und arbeitet **in-place** in diesem Verzeichnis:
    - Legt Ordnerstruktur an (`wissensbasis/`, `artikel/content/`, `berichte/`, `seo/`, `changelog/`, `quelldateien/`, `tmp/`)
    - Erzeugt projektspezifische CLAUDE.md (ersetzt diese hier)
@@ -22,15 +22,15 @@ Diese CLAUDE.md wird beim ersten Durchlauf von `project-setup` durch die projekt
 
 | Skill | Rolle |
 |---|---|
-| `project-setup` | Werkzeug – parametrisiert das Projekt. Bleibt nach Setup liegen (für spätere Nachpflege/QA). |
-| `content-html-formatter` | Vorlage – bewusst generisch, liest Projektspezifisches aus `wissensbasis/html-elemente.md`. |
-| `ga4-reports` | Vorlage – Property-ID/Domain werden beim Setup in-place ersetzt. |
+| [`project-setup`](.claude/skills/project-setup/SKILL.md) | Werkzeug – parametrisiert das Projekt. Bleibt nach Setup liegen (für spätere Nachpflege/QA). |
+| [`content-html-formatter`](.claude/skills/content-html-formatter/SKILL.md) | Vorlage – bewusst generisch, liest Projektspezifisches aus `wissensbasis/html-elemente.md`. |
+| [`ga4-reports`](.claude/skills/ga4-reports/SKILL.md) | Vorlage – Property-ID/Domain werden beim Setup in-place ersetzt. |
 
 Wird ein Skill im konkreten Projekt nicht gebraucht (z.B. kein GA4), kann der Skill-Ordner einfach gelöscht werden.
 
 ## MCP-Konfiguration
 
-Die MCP-Server sind in `.claude/settings.json` **aktiviert** (nicht installiert):
+Die MCP-Server sind in [`.claude/settings.json`](.claude/settings.json) **aktiviert** (nicht installiert):
 - `google-ads`
 - `gsc`
 - `google-tag-manager`
@@ -42,7 +42,7 @@ Dieses Repo setzt **keine** MCP-Verbindungen auf – das macht der User pro Proj
 
 ## Regeln für Änderungen am Vorlage-Repo
 
-1. **Skills nicht divergieren lassen.** Wenn du an einem der Template-Skills etwas änderst, prüfe, ob die Änderung auch in die Referenz-CLAUDE.md oder den `project-setup`-Skill gehört.
+1. **Skills nicht divergieren lassen.** Wenn du an einem der Template-Skills etwas änderst, prüfe, ob die Änderung auch in die [Referenz-CLAUDE.md](.claude/skills/project-setup/references/CLAUDE-referenz.md) oder den [`project-setup`](.claude/skills/project-setup/SKILL.md)-Skill gehört.
 2. **Platzhalter einheitlich halten.** Einmal `[PROPERTY_ID]`, immer `[PROPERTY_ID]` – nicht mal `{PROPERTY_ID}`, mal `<PROPERTY_ID>`.
 3. **Keine Kundendaten committen.** Alle Beispiele sind entweder generisch (SWG in der Referenz-CLAUDE.md) oder als Platzhalter markiert.
 4. **Deutsche Umlaute** in allen deutschsprachigen Texten: ä, ö, ü, Ä, Ö, Ü, ß. Ausnahme: YAML-Frontmatter in SKILL.md-Dateien.
@@ -52,7 +52,8 @@ Dieses Repo setzt **keine** MCP-Verbindungen auf – das macht der User pro Proj
 ```
 ./
 ├── .claude/
-│   ├── settings.local.json          # MCP-Server aktiviert, Permissions leer
+│   ├── settings.json                # MCP-Server aktiviert (committet)
+│   ├── settings.local.json          # User-Permissions (gitignored)
 │   └── skills/
 │       ├── project-setup/
 │       │   ├── SKILL.md

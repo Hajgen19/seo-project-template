@@ -22,9 +22,9 @@ git remote remove origin
 
 | Skill | Zweck |
 |---|---|
-| **project-setup** | Parametrisiert neue Projekte: Ordnerstruktur, CLAUDE.md, Wissensbasis aus Website-Crawl, Platzhalter in den anderen Skills. Bleibt nach Setup für spätere Nachpflege im Projekt. |
-| **content-html-formatter** | CMS-agnostischer HTML-Formatter. Bewusst generisch – liest die projektspezifischen HTML-Bausteine aus `wissensbasis/html-elemente.md`. Verweigert Output, solange die Wissensbasis leer ist. |
-| **ga4-reports** | GA4-Reporting über MCP mit voller Nachvollziehbarkeit (Verifikationsblock pro Abfrage). Property-ID, Domain, Schlüsselereignisse werden beim Setup in-place gesetzt. |
+| **[project-setup](.claude/skills/project-setup/SKILL.md)** | Parametrisiert neue Projekte: Ordnerstruktur, CLAUDE.md, Wissensbasis aus Website-Crawl, Platzhalter in den anderen Skills. Bleibt nach Setup für spätere Nachpflege im Projekt. |
+| **[content-html-formatter](.claude/skills/content-html-formatter/SKILL.md)** | CMS-agnostischer HTML-Formatter. Bewusst generisch – liest die projektspezifischen HTML-Bausteine aus `wissensbasis/html-elemente.md`. Verweigert Output, solange die Wissensbasis leer ist. Vorlage dafür: [wissensbasis-template.md](.claude/skills/content-html-formatter/references/wissensbasis-template.md). |
+| **[ga4-reports](.claude/skills/ga4-reports/SKILL.md)** | GA4-Reporting über MCP mit voller Nachvollziehbarkeit (Verifikationsblock pro Abfrage). Property-ID, Domain, Schlüsselereignisse werden beim Setup in-place gesetzt. Siehe auch [api-mapping.md](.claude/skills/ga4-reports/references/api-mapping.md). |
 
 Nicht benötigte Skill-Ordner nach dem Setup einfach löschen.
 
@@ -44,7 +44,7 @@ Die vier im Repo aktivierten MCP-Server (`google-ads`, `gsc`, `google-tag-manage
 
 Ohne diese Installation triggern die Skills zwar, die MCP-Tool-Calls selbst scheitern aber. Erst danach funktionieren `ga4-reports` und alle anderen datenabhängigen Workflows.
 
-Die **Aktivierung** dieser MCP-Server (nicht die Installation) ist in `.claude/settings.json` bereits vorbereitet:
+Die **Aktivierung** dieser MCP-Server (nicht die Installation) ist in [`.claude/settings.json`](.claude/settings.json) bereits vorbereitet:
 
 ```json
 {
@@ -62,14 +62,14 @@ Das bedeutet: Sobald die Server lokal vorhanden sind, werden sie in diesem Proje
 
 ## Projektkonventionen
 
-Das Repo bringt etablierte Konventionen mit, die `project-setup` in jede neue Projekt-`CLAUDE.md` übernimmt:
+Das Repo bringt etablierte Konventionen mit, die [`project-setup`](.claude/skills/project-setup/SKILL.md) in jede neue Projekt-[`CLAUDE.md`](CLAUDE.md) übernimmt:
 
 - **Artikel-Ordner:** Je Seite ein Ordner unter `artikel/content/<slug>/` mit `artikel.md`, `seo.md`, `<cms>.html`, `artikel.docx`
 - **Changelog:** Eine Tagesdatei pro Arbeitstag unter `changelog/YYYY-MM-DD.md`, keine zentrale CHANGELOG.md
 - **Wissensbasis:** `wissensbasis/*.md` mit Quellenangabe am Dateiende, Single Source of Truth für Kundenkontext
 - **Schreibregeln:** Deutsche Umlaute, konsistente Markenname-Schreibweise, keine Kausal-Spekulationen in Reports
 
-Ein ausgefülltes Beispiel einer projektspezifischen CLAUDE.md (fiktiver Kunde „Sonnenwerk Solar GmbH") liegt unter `.claude/skills/project-setup/references/CLAUDE-referenz.md`.
+Ein ausgefülltes Beispiel einer projektspezifischen CLAUDE.md (fiktiver Kunde „Sonnenwerk Solar GmbH") liegt unter [`.claude/skills/project-setup/references/CLAUDE-referenz.md`](.claude/skills/project-setup/references/CLAUDE-referenz.md).
 
 ## Struktur
 
