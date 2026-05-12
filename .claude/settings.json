@@ -4,6 +4,7 @@
     "google-ads",
     "gsc",
     "google-tag-manager",
-    "ga4-analytics"
+    "ga4-analytics",
+    "playwright"
   ]
 }
