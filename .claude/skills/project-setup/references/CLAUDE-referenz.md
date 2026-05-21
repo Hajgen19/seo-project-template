@@ -19,6 +19,9 @@ Beim echten Projektsetup:
 - Zielgruppen: Eigenheimbesitzer (Neubau + Bestand), kleine Gewerbebetriebe, Genossenschaften
 - Leistungen: PV-Anlagenplanung, Installation, Stromspeicher, Wallbox-Integration, Wartung, Förderberatung
 - Konzernzugehörigkeit: unabhängig, eigentümergeführt seit 2011
+- **Marke:** Sonnenwerk Solar
+- **CMS-Dateiname:** wordpress.html
+- **CMS-Editor:** Divi
 
 ## Analytics-Anbindung
 
@@ -34,10 +37,12 @@ Beim echten Projektsetup:
 
 ## Schreibregeln
 
+- **Tone of Voice:** `wissensbasis/tone-of-voice.md` ist die verbindliche Stimm-Referenz. Vor jedem Text lesen, danach Checkliste durchgehen. Texte müssen klingen wie aus dieser Datei abgeleitet. Generic-AI-Sprache wird vom Kunden abgelehnt.
 - **Deutsche Umlaute:** In ALLEN deutschsprachigen Ausgaben echte Umlaute verwenden: ä, ö, ü, Ä, Ö, Ü, ß. NIEMALS ASCII-Transliterationen (ae/oe/ue/ss). Ausnahme: YAML-Frontmatter in SKILL.md und URL-Slugs.
 - **Anrede:** Siezen (Sie/Ihr/Ihnen). Nie duzen.
 - **Schreibweise „Sonnenwerk Solar GmbH"** oder Kurzform **„SWG"** – konsistent halten. Nicht „Sonnenwerk" allein (Verwechslung mit Konkurrenz).
-- **Tonalität:** sachlich-informativ, lösungsorientiert. Kein Werbesprech („die beste Anlage der Welt"), keine Superlative ohne Beleg.
+- **Em-Dash „–":** Der SWG-Geschäftsführer nutzt ihn in Originaltexten nicht (geprüft beim Voice-Setup). Daher in neuen Texten nicht verwenden. Geviertstrich „—" generell nicht.
+- **Tonalität:** sachlich-informativ, lösungsorientiert. Kein Werbesprech („die beste Anlage der Welt"), keine Superlative ohne Beleg. Vollständige Voice-Spezifikation in `wissensbasis/tone-of-voice.md`.
 - **Fachbegriffe erklären:** kWp, Einspeisevergütung, Eigenverbrauchsquote, Wechselrichter – beim ersten Vorkommen kurz definieren.
 - **Zahlen und Preise:** nur aus `wissensbasis/swg-leistungen.md` übernehmen, niemals schätzen oder aus Trainingsdaten ergänzen.
 
@@ -49,6 +54,7 @@ Projekte/SWG/
 │   ├── swg-unternehmen.md       # Firma, Historie, Standort, Team, Zielgruppen
 │   ├── swg-leistungen.md        # Produkte, Pakete, Preise, USPs
 │   ├── swg-website-struktur.md  # URL-Kategorisierung, Navigation, Seitentypen
+│   ├── tone-of-voice.md         # Verbindliche Stimm-Referenz – Pflicht-Lektüre vor jedem Text
 │   ├── design.md                # Farben, Typografie, Logo, CTA-Stil (für Präsentationen)
 │   └── html-elemente.md         # CMS-HTML-Bausteine (WordPress) – Pflicht für content-html-formatter
 ├── quelldateien/                # Rohdaten vom Kunden (Briefings, Bilder, Korrekturen)
@@ -60,6 +66,7 @@ Projekte/SWG/
 ├── tmp/                         # Temporär, Skripte (löschbar, nicht versionieren)
 ├── changelog/                   # Pro Arbeitstag eine Datei YYYY-MM-DD.md
 ├── .claude/skills/              # Projekt-Skills (aus Vorlage-Repo, in-place parametrisiert):
+│   ├── article-create/          #   – Pflicht-Skill: legt Artikel-Pflichtstruktur an
 │   ├── content-html-formatter/  #   – formatiert Texte als WordPress-HTML
 │   ├── ga4-reports/             #   – zieht GA4-Daten, Property 384502917
 │   └── project-setup/           #   – Setup-Werkzeug, bleibt für spätere Nachpflege
@@ -103,10 +110,11 @@ Regeln:
 ## Tools
 
 - **Puppeteer** – installiert in `tmp/node_modules/` für das vollständige Rendern von Website-Seiten (JS-Content, Shortcodes). Scripte: `tmp/fetch-page.js`, `tmp/extract-content.js`.
-- **docx-Generator** – Node-Script in `tmp/create-docx.js` für Word-Export aus `artikel.md`.
+- **python-docx** – Auto-Generierung von `artikel.docx` über `.claude/skills/article-create/references/create-docx.py` (liest `artikel.md` + `seo.md`). Voraussetzung: `pip install python-docx`. Unterstützt im `artikel.md`: Headings H1–H4, **fett**, *kursiv*, `[text](url)`-Links, Pipe-Tabellen, Listen (`-` und `1.`), Blockquotes – alles wird in echte Word-Elemente übersetzt.
 
 ## Projektspezifische Skills
 
+- **article-create** (`.claude/skills/article-create/`) – Pflicht-Skill. Legt neue Artikel/Seiten in der Pflicht-Struktur unter `artikel/content/<slug>/` an, erzeugt die vier Pflichtdateien (`artikel.md`, `seo.md`, `wordpress.html`, `artikel.docx`). Liest CLAUDE.md (Über > CMS-Dateiname, CMS-Editor, Marke) und `wissensbasis/tone-of-voice.md` zur Laufzeit. Keine Parametrisierung nötig.
 - **content-html-formatter** (`.claude/skills/content-html-formatter/`) – Formatiert Texte als WordPress-fertiges HTML. Liest die SWG-Bausteine aus `wissensbasis/html-elemente.md`. Verweigert den Output, solange die Wissensbasis leer ist.
 - **ga4-reports** (`.claude/skills/ga4-reports/`) – Zieht GA4-Daten über den MCP und präsentiert sie faktenbasiert. Property-ID `384502917` und Domain `sonnenwerk-solar.de` sind im SKILL.md gesetzt. Schlüsselereignisse: siehe Sektion „Analytics-Anbindung" oben.
 
@@ -124,11 +132,12 @@ Damit der project-setup-Skill versteht, **warum** die CLAUDE.md so strukturiert 
 
 | Sektion | Verzahnt mit |
 |---|---|
-| Über [Kundenname] | Basis für Ton, Zielgruppen-Ansprache in artikel.md und wordpress.html |
+| Über [Kundenname] | Basis für Ton, Zielgruppen-Ansprache. Enthält **CMS-Dateiname** und **CMS-Editor**, die von article-create und create-docx.py zur Laufzeit gelesen werden. |
 | Analytics-Anbindung | ga4-reports-Skill – Property-ID hier ist Single Source of Truth, im Skill nur referenziert |
-| Schreibregeln | content-html-formatter + jede Artikel-Erstellung – Umlaute, Anrede, Markenname |
+| Schreibregeln | content-html-formatter + jede Artikel-Erstellung – Umlaute, Anrede, Markenname, Verweis auf tone-of-voice.md |
+| tone-of-voice.md | Jeder Schreib-Skill (article-create, seo-content-writer, meta-tags-ctr, schema-markup-generator) liest sie vor dem Schreiben und prüft den Output gegen die Checkliste. Stimm-Drift ist der häufigste Qualitätsmangel und wird hier verhindert. |
 | Quellenpfade | Alle Skills nutzen diese Pfade zum Lesen/Schreiben. html-elemente.md wird vom content-html-formatter gelesen. |
-| Artikel-Ordnerkonvention | Jede Content-Arbeit legt genau diese 4 Dateien an. wordpress.html-Erzeugung triggert content-html-formatter. |
+| Artikel-Ordnerkonvention | article-create legt genau diese 4 Dateien an, der CMS-Dateiname kommt aus CLAUDE.md > Über. |
 | Changelog-Konvention | Bei jeder Änderung pflegen – keine zentrale CHANGELOG.md, stattdessen Tagesdateien. |
 | Tools | Nur wenn projektweite Skripte/Binaries installiert – sonst Sektion weglassen. |
 | Projektspezifische Skills | Listet welche Template-Skills im Projekt aktiv sind (nach Parametrisierung). Property-ID/Domain sind dort schon gesetzt – hier nur Verweis. |

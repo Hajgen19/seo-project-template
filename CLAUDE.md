@@ -9,24 +9,31 @@ Diese CLAUDE.md wird beim ersten Durchlauf von [`project-setup`](.claude/skills/
 1. **Vorlage-Repo klonen:** `git clone <repo-url> neuer-kunde/`
 2. **In den Ordner wechseln** und Claude Code starten
 3. **User-Prompt:** „Lege Projekt für [Kundenname] an" (oder vergleichbar) → triggert den [`project-setup`](.claude/skills/project-setup/SKILL.md)-Skill
-4. `project-setup` fragt die Kundendaten ab und arbeitet **in-place** in diesem Verzeichnis:
+4. `project-setup` fragt die Kundendaten ab (inkl. **CMS-Dateiname** und **CMS-Editor**) und arbeitet **in-place** in diesem Verzeichnis:
    - Legt Ordnerstruktur an (`wissensbasis/`, `artikel/content/`, `berichte/`, `seo/`, `changelog/`, `quelldateien/`, `tmp/`)
-   - Erzeugt projektspezifische CLAUDE.md (ersetzt diese hier)
-   - Generiert Wissensbasis aus der CSV
+   - Erzeugt projektspezifische CLAUDE.md (ersetzt diese hier) – inkl. Pflichtzeilen `**Marke:**`, `**CMS-Dateiname:**`, `**CMS-Editor:**` in der „Über"-Sektion
+   - Generiert Wissensbasis aus der CSV (Unternehmen, Leistungen, Website-Struktur, Design)
+   - Erstellt **`wissensbasis/tone-of-voice.md`** aus den persönlichsten Kundentexten – verbindliche Stimm-Referenz für alle späteren Schreibvorgänge
    - Parametrisiert `ga4-reports` (ersetzt `[PROPERTY_ID]`, `[WEBSITE_DOMAIN]`, `[PROJEKT_NAME]`, `[STAND_DATUM]` und Schlüsselereignisse in-place)
    - Erinnert daran, `wissensbasis/html-elemente.md` mit CMS-Snippets zu füllen
+   - Smoke-Test mit `article-create` (vier Pflichtdateien, korrekter CMS-Dateiname, DOCX-Deckblatt)
    - Läuft durch die QA-Checkliste
-5. **Danach:** normaler Content-Workflow (Artikel schreiben, HTML formatieren, GA4-Reports ziehen).
+5. **Danach:** normaler Content-Workflow (Artikel über `article-create` anlegen, HTML formatieren, GA4-Reports ziehen).
 
 ## Skills im Vorlage-Repo
 
 | Skill | Rolle |
 |---|---|
 | [`project-setup`](.claude/skills/project-setup/SKILL.md) | Werkzeug – parametrisiert das Projekt. Bleibt nach Setup liegen (für spätere Nachpflege/QA). |
+| [`article-create`](.claude/skills/article-create/SKILL.md) | **Pflicht-Skill.** Legt neue Artikel/Seiten in der vier-Dateien-Pflichtstruktur an (`artikel.md`, `seo.md`, `<cms>.html`, `artikel.docx`). Liest CLAUDE.md (CMS-Dateiname, CMS-Editor) und `wissensbasis/tone-of-voice.md` zur Laufzeit. Keine Parametrisierung nötig. |
 | [`content-html-formatter`](.claude/skills/content-html-formatter/SKILL.md) | Vorlage – bewusst generisch, liest Projektspezifisches aus `wissensbasis/html-elemente.md`. |
 | [`ga4-reports`](.claude/skills/ga4-reports/SKILL.md) | Vorlage – Property-ID/Domain werden beim Setup in-place ersetzt. |
 
-Wird ein Skill im konkreten Projekt nicht gebraucht (z.B. kein GA4), kann der Skill-Ordner einfach gelöscht werden.
+`article-create` und `project-setup` bleiben in jedem Projekt aktiv. Die anderen können bei Bedarf gelöscht werden (z.B. kein GA4 → `ga4-reports/` entfernen).
+
+## Python-Abhängigkeit für article-create
+
+Der `article-create`-Skill ruft `references/create-docx.py` auf, um pro Artikel automatisch eine `artikel.docx` zu erzeugen. Voraussetzung: **Python 3.x** und `pip install python-docx`. Ohne diese Abhängigkeit schlägt Schritt 6 in `article-create` (DOCX-Erzeugung) fehl. Der Skill weist in dem Fall im Bericht auf die fehlende Abhängigkeit hin.
 
 ## MCP-Konfiguration
 
@@ -59,6 +66,11 @@ Dieses Repo setzt **keine** MCP-Verbindungen auf – das macht der User pro Proj
 │       │   ├── SKILL.md
 │       │   └── references/
 │       │       └── CLAUDE-referenz.md   # Ausgefüllte Beispiel-CLAUDE.md (SWG)
+│       ├── article-create/          # Pflicht-Skill, generisch
+│       │   ├── SKILL.md
+│       │   └── references/
+│       │       ├── seo-template.md
+│       │       └── create-docx.py
 │       ├── content-html-formatter/
 │       │   ├── SKILL.md
 │       │   └── references/
@@ -67,5 +79,7 @@ Dieses Repo setzt **keine** MCP-Verbindungen auf – das macht der User pro Proj
 │           ├── SKILL.md
 │           └── references/
 │               └── api-mapping.md
-└── CLAUDE.md                        # diese Datei – wird beim Setup ersetzt
+├── .gitignore
+├── CLAUDE.md                        # diese Datei – wird beim Setup ersetzt
+└── README.md
 ```

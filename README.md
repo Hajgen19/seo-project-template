@@ -1,6 +1,6 @@
 # SEO Project Template
 
-Vorlage-Repo für neue SEO-Kundenprojekte mit [Claude Code](https://claude.com/claude-code). Enthält drei vorkonfigurierte Skills, die beim ersten Durchlauf in-place an den jeweiligen Kunden parametrisiert werden.
+Vorlage-Repo für neue SEO-Kundenprojekte mit [Claude Code](https://claude.com/claude-code). Enthält vier vorkonfigurierte Skills: zwei Pflicht-Skills (`project-setup`, `article-create`) und zwei optionale Vorlagen (`content-html-formatter`, `ga4-reports`), die beim ersten Durchlauf in-place an den jeweiligen Kunden parametrisiert werden.
 
 ## Quick Start
 
@@ -20,18 +20,20 @@ git remote remove origin
 
 ## Enthaltene Skills
 
-| Skill | Zweck |
-|---|---|
-| **[project-setup](.claude/skills/project-setup/SKILL.md)** | Parametrisiert neue Projekte: Ordnerstruktur, CLAUDE.md, Wissensbasis aus Website-Crawl, Platzhalter in den anderen Skills. Bleibt nach Setup für spätere Nachpflege im Projekt. |
-| **[content-html-formatter](.claude/skills/content-html-formatter/SKILL.md)** | CMS-agnostischer HTML-Formatter. Bewusst generisch – liest die projektspezifischen HTML-Bausteine aus `wissensbasis/html-elemente.md`. Verweigert Output, solange die Wissensbasis leer ist. Vorlage dafür: [wissensbasis-template.md](.claude/skills/content-html-formatter/references/wissensbasis-template.md). |
-| **[ga4-reports](.claude/skills/ga4-reports/SKILL.md)** | GA4-Reporting über MCP mit voller Nachvollziehbarkeit (Verifikationsblock pro Abfrage). Property-ID, Domain, Schlüsselereignisse werden beim Setup in-place gesetzt. Siehe auch [api-mapping.md](.claude/skills/ga4-reports/references/api-mapping.md). |
+| Skill | Zweck | Pflicht? |
+|---|---|---|
+| **[project-setup](.claude/skills/project-setup/SKILL.md)** | Parametrisiert neue Projekte: Ordnerstruktur, CLAUDE.md (inkl. CMS-Dateiname, CMS-Editor, Marke), Wissensbasis aus Website-Crawl, **`tone-of-voice.md`** aus Kundentexten, Platzhalter in den anderen Skills. Bleibt nach Setup für spätere Nachpflege im Projekt. | ✓ |
+| **[article-create](.claude/skills/article-create/SKILL.md)** | Legt neue Artikel/Seiten in der Pflicht-Struktur unter `artikel/content/<slug>/` an (vier Pflichtdateien: `artikel.md`, `seo.md`, `<cms>.html`, `artikel.docx`). Generisch – liest CMS-Dateiname und CMS-Editor zur Laufzeit aus CLAUDE.md, Stimm-Vorgabe aus `wissensbasis/tone-of-voice.md`. Inklusive [seo-template.md](.claude/skills/article-create/references/seo-template.md) und [create-docx.py](.claude/skills/article-create/references/create-docx.py). | ✓ |
+| **[content-html-formatter](.claude/skills/content-html-formatter/SKILL.md)** | CMS-agnostischer HTML-Formatter. Bewusst generisch – liest die projektspezifischen HTML-Bausteine aus `wissensbasis/html-elemente.md`. Verweigert Output, solange die Wissensbasis leer ist. Vorlage dafür: [wissensbasis-template.md](.claude/skills/content-html-formatter/references/wissensbasis-template.md). | optional |
+| **[ga4-reports](.claude/skills/ga4-reports/SKILL.md)** | GA4-Reporting über MCP mit voller Nachvollziehbarkeit (Verifikationsblock pro Abfrage). Property-ID, Domain, Schlüsselereignisse werden beim Setup in-place gesetzt. Siehe auch [api-mapping.md](.claude/skills/ga4-reports/references/api-mapping.md). | optional |
 
-Nicht benötigte Skill-Ordner nach dem Setup einfach löschen.
+Nicht benötigte optionale Skill-Ordner können nach dem Setup gelöscht werden. `project-setup` und `article-create` bleiben immer im Projekt.
 
 ## Voraussetzungen
 
 - [Claude Code](https://claude.com/claude-code) CLI (oder Desktop/IDE-Extension)
-- Lokal installierte und eingerichtete MCP-Server für `google-ads`, `gsc`, `google-tag-manager` und `ga4-analytics`
+- **Python 3.x** plus `pip install python-docx` – wird vom `article-create`-Skill für die automatische Word-Export-Generierung (`artikel.docx`) verwendet (siehe [`create-docx.py`](.claude/skills/article-create/references/create-docx.py))
+- Lokal installierte und eingerichtete MCP-Server für `google-ads`, `gsc`, `google-tag-manager` und `ga4-analytics` (nur nötig, wenn der `ga4-reports`-Skill verwendet wird)
 
 ### Wichtiger Hinweis zu den MCP-Servern
 
@@ -64,10 +66,10 @@ Das bedeutet: Sobald die Server lokal vorhanden sind, werden sie in diesem Proje
 
 Das Repo bringt etablierte Konventionen mit, die [`project-setup`](.claude/skills/project-setup/SKILL.md) in jede neue Projekt-[`CLAUDE.md`](CLAUDE.md) übernimmt:
 
-- **Artikel-Ordner:** Je Seite ein Ordner unter `artikel/content/<slug>/` mit `artikel.md`, `seo.md`, `<cms>.html`, `artikel.docx`
+- **Artikel-Ordner:** Je Seite ein Ordner unter `artikel/content/<slug>/` mit `artikel.md`, `seo.md`, `<cms>.html`, `artikel.docx`. Angelegt durch den `article-create`-Skill, CMS-Dateiname kommt aus `CLAUDE.md > Über > **CMS-Dateiname:**`.
 - **Changelog:** Eine Tagesdatei pro Arbeitstag unter `changelog/YYYY-MM-DD.md`, keine zentrale CHANGELOG.md
-- **Wissensbasis:** `wissensbasis/*.md` mit Quellenangabe am Dateiende, Single Source of Truth für Kundenkontext
-- **Schreibregeln:** Deutsche Umlaute, konsistente Markenname-Schreibweise, keine Kausal-Spekulationen in Reports
+- **Wissensbasis:** `wissensbasis/*.md` mit Quellenangabe am Dateiende, Single Source of Truth für Kundenkontext. Pflicht-Datei: `wissensbasis/tone-of-voice.md` als Stimm-Referenz, gegen die jeder Text geprüft wird (verhindert Generic-AI-Drift).
+- **Schreibregeln:** Deutsche Umlaute, konsistente Markenname-Schreibweise, keine Kausal-Spekulationen in Reports. Anrede/Em-Dash-Regel pro Kunde laut `tone-of-voice.md`.
 
 Ein ausgefülltes Beispiel einer projektspezifischen CLAUDE.md (fiktiver Kunde „Sonnenwerk Solar GmbH") liegt unter [`.claude/skills/project-setup/references/CLAUDE-referenz.md`](.claude/skills/project-setup/references/CLAUDE-referenz.md).
 
@@ -78,9 +80,10 @@ Ein ausgefülltes Beispiel einer projektspezifischen CLAUDE.md (fiktiver Kunde �
 ├── .claude/
 │   ├── settings.json                    # MCP-Server aktiviert
 │   └── skills/
-│       ├── project-setup/               # Setup-Werkzeug
-│       ├── content-html-formatter/      # HTML-Formatter-Vorlage
-│       └── ga4-reports/                 # GA4-Reporting-Vorlage
+│       ├── project-setup/               # Setup-Werkzeug (Pflicht)
+│       ├── article-create/              # Artikel-Pflichtstruktur (Pflicht)
+│       ├── content-html-formatter/      # HTML-Formatter-Vorlage (optional)
+│       └── ga4-reports/                 # GA4-Reporting-Vorlage (optional)
 ├── .gitignore
 ├── CLAUDE.md                            # wird beim Setup ersetzt
 └── README.md                            # diese Datei
