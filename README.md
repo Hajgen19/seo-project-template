@@ -46,22 +46,6 @@ Die vier im Repo aktivierten MCP-Server (`google-ads`, `gsc`, `google-tag-manage
 
 Ohne diese Installation triggern die Skills zwar, die MCP-Tool-Calls selbst scheitern aber. Erst danach funktionieren `ga4-reports` und alle anderen datenabhängigen Workflows.
 
-Die **Aktivierung** dieser MCP-Server (nicht die Installation) ist in [`.claude/settings.json`](.claude/settings.json) bereits vorbereitet:
-
-```json
-{
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "google-ads",
-    "gsc",
-    "google-tag-manager",
-    "ga4-analytics"
-  ]
-}
-```
-
-Das bedeutet: Sobald die Server lokal vorhanden sind, werden sie in diesem Projekt automatisch geladen. Sind sie nicht installiert, bleibt dieser Block wirkungslos (kein Fehler, aber auch keine MCP-Tools).
-
 ## Projektkonventionen
 
 Das Repo bringt etablierte Konventionen mit, die [`project-setup`](.claude/skills/project-setup/SKILL.md) in jede neue Projekt-[`CLAUDE.md`](CLAUDE.md) übernimmt:
@@ -78,7 +62,6 @@ Ein ausgefülltes Beispiel einer projektspezifischen CLAUDE.md (fiktiver Kunde �
 ```
 ./
 ├── .claude/
-│   ├── settings.json                    # MCP-Server aktiviert
 │   └── skills/
 │       ├── project-setup/               # Setup-Werkzeug (Pflicht)
 │       ├── article-create/              # Artikel-Pflichtstruktur (Pflicht)

@@ -37,13 +37,13 @@ Der `article-create`-Skill ruft `references/create-docx.py` auf, um pro Artikel 
 
 ## MCP-Konfiguration
 
-Die MCP-Server sind in [`.claude/settings.json`](.claude/settings.json) **aktiviert** (nicht installiert):
+Folgende MCP-Server werden vom Repo verwendet (lokal zu installieren):
 - `google-ads`
 - `gsc`
 - `google-tag-manager`
 - `ga4-analytics`
 
-**Wichtig:** Diese vier MCP-Server sind **keine öffentlich verfügbaren Pakete**. Es gibt aktuell keinen Marketplace-Eintrag und keine fertigen Installer. Sie müssen zuerst lokal installiert und mit OAuth-Credentials/API-Keys versorgt werden, bevor Skills wie `ga4-reports` funktionieren. Die Aktivierung in `settings.json` lädt nur, was lokal schon existiert – ohne Installation passiert nichts (kein Fehler, aber auch keine Tools).
+**Wichtig:** Diese vier MCP-Server sind **keine öffentlich verfügbaren Pakete**. Es gibt aktuell keinen Marketplace-Eintrag und keine fertigen Installer. Sie müssen zuerst lokal installiert und mit OAuth-Credentials/API-Keys versorgt werden, bevor Skills wie `ga4-reports` funktionieren. Ohne Installation passiert nichts (kein Fehler, aber auch keine Tools).
 
 Dieses Repo setzt **keine** MCP-Verbindungen auf – das macht der User pro Projekt, außerhalb des Repos.
 
@@ -59,8 +59,6 @@ Dieses Repo setzt **keine** MCP-Verbindungen auf – das macht der User pro Proj
 ```
 ./
 ├── .claude/
-│   ├── settings.json                # MCP-Server aktiviert (committet)
-│   ├── settings.local.json          # User-Permissions (gitignored)
 │   └── skills/
 │       ├── project-setup/
 │       │   ├── SKILL.md

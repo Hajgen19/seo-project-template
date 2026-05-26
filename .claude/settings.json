@@ -1,9 +1,0 @@
-{
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "google-ads",
-    "gsc",
-    "google-tag-manager",
-    "ga4-analytics"
-  ]
-}
