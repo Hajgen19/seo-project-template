@@ -37,7 +37,7 @@ Nicht benötigte optionale Skill-Ordner können nach dem Setup gelöscht werden.
 
 ### Wichtiger Hinweis zu den MCP-Servern
 
-Die vier im Repo aktivierten MCP-Server (`google-ads`, `gsc`, `google-tag-manager`, `ga4-analytics`) sind **keine öffentlich verfügbaren Pakete** – es gibt aktuell keinen offiziellen Marketplace-Eintrag und keine fertigen Installer-Befehle dafür. Sie müssen **zuerst lokal installiert und konfiguriert** werden, bevor die Skills nutzbar sind. Das umfasst pro Server:
+Die vier vom Repo verwendeten MCP-Server (`google-ads`, `gsc`, `google-tag-manager`, `ga4-analytics`) sind **keine öffentlich verfügbaren Pakete** – es gibt aktuell keinen offiziellen Marketplace-Eintrag und keine fertigen Installer-Befehle dafür. Sie müssen **zuerst lokal installiert und konfiguriert** werden, bevor die Skills nutzbar sind. Das umfasst pro Server:
 
 - Quellcode beschaffen (eigenes Repo, Fork, oder Eigenentwicklung)
 - Abhängigkeiten installieren (Python-venv, Node, je nach Implementierung)
