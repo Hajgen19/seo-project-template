@@ -4,6 +4,9 @@
 # Temporäre Dateien und Skripte (projektweit löschbar)
 tmp/
 
+# Playwright MCP – Browser-Snapshots, Screenshots, Console-Logs (können Credentials enthalten)
+.playwright-mcp/
+
 # Dependencies
 node_modules/
 
