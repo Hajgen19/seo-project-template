@@ -1,0 +1,166 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SERP Snapshot",
+  "description": "Strukturierte SERP-Daten aus Phase 2. Eine Datei pro Seed-Query pro Device.",
+  "type": "object",
+  "required": ["query", "locale", "device", "timestamp", "features", "organic"],
+  "properties": {
+    "query": {
+      "type": "string",
+      "description": "Die gesuchte Query"
+    },
+    "locale": {
+      "type": "string",
+      "examples": ["de-DE", "en-US"],
+      "description": "Locale, gegen die gescrapt wurde"
+    },
+    "device": {
+      "type": "string",
+      "enum": ["desktop", "mobile"]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "snapshot_html_path": {
+      "type": "string",
+      "description": "Pfad zur HTML-Snapshot-Datei für Forensik bei volatilen Selektoren"
+    },
+    "features": {
+      "type": "object",
+      "properties": {
+        "ai_overview": {
+          "type": ["object", "null"],
+          "properties": {
+            "present": {"type": "boolean"},
+            "text": {"type": "string"},
+            "sources": {
+              "type": "array",
+              "items": {"type": "string", "format": "uri"}
+            }
+          }
+        },
+        "featured_snippet": {
+          "type": ["object", "null"],
+          "properties": {
+            "present": {"type": "boolean"},
+            "format": {
+              "type": "string",
+              "enum": ["paragraph", "list_numbered", "list_bulleted", "table", "video"]
+            },
+            "source_url": {"type": "string", "format": "uri"},
+            "text": {"type": "string"}
+          }
+        },
+        "people_also_ask": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "question": {"type": "string"},
+              "answer_preview": {"type": "string"},
+              "level": {"type": "integer", "minimum": 1, "maximum": 3}
+            }
+          }
+        },
+        "knowledge_panel": {
+          "type": ["object", "null"],
+          "properties": {
+            "entity_type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"}
+          }
+        },
+        "shopping_pack": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {"type": "string"},
+              "price": {"type": "string"},
+              "merchant": {"type": "string"}
+            }
+          }
+        },
+        "local_pack": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {"type": "string"},
+              "rating": {"type": "number"},
+              "address": {"type": "string"}
+            }
+          }
+        },
+        "video_carousel": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {"type": "string"},
+              "channel": {"type": "string"},
+              "url": {"type": "string", "format": "uri"}
+            }
+          }
+        },
+        "top_stories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {"type": "string"},
+              "source": {"type": "string"},
+              "published": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "ads_count_top": {"type": "integer", "minimum": 0},
+    "ads_count_bottom": {"type": "integer", "minimum": 0},
+    "organic": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "required": ["position", "url", "title"],
+        "properties": {
+          "position": {"type": "integer", "minimum": 1, "maximum": 10},
+          "url": {"type": "string", "format": "uri"},
+          "title": {"type": "string"},
+          "snippet": {"type": "string"},
+          "domain": {"type": "string"},
+          "page_type_guess": {
+            "type": "string",
+            "enum": ["Blog", "PDP", "PLP", "Listicle", "How-To", "Forum", "Video", "Wikipedia", "Service-Page", "Glossary", "Pillar", "Definition", "News", "Other"]
+          },
+          "estimated_word_count": {"type": ["integer", "null"]}
+        }
+      }
+    },
+    "estimated_intent_class": {
+      "type": "string",
+      "enum": ["Short fact", "Bool", "Definition", "Instruction", "Reason", "Comparison", "Consequence", "Question"],
+      "description": "Williams-Cook Intent-Klasse, abgeleitet aus SERP-Composition + Page-Type-Verteilung"
+    },
+    "mixed_intent_flag": {
+      "type": "boolean",
+      "description": "True wenn Top-10 ≥ 3 unterschiedliche Page-Types enthält"
+    },
+    "dominant_page_type": {"type": "string"},
+    "dominant_page_type_count": {"type": "integer"},
+    "click_share_estimate": {
+      "type": "object",
+      "description": "Geschätzter Anteil klassischer Organic-Clicks",
+      "properties": {
+        "classic_organic_pct": {"type": "number", "minimum": 0, "maximum": 100},
+        "ai_overview_pct": {"type": "number"},
+        "ads_pct": {"type": "number"},
+        "shopping_pct": {"type": "number"},
+        "other_pct": {"type": "number"}
+      }
+    }
+  }
+}

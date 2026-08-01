@@ -1,0 +1,172 @@
+{
+  "_doc": "Deutsche Modifier- und Fragewort-Listen. Zwei Verwendungen: (1) Alphabet-Soup/Suggest-Expansion in Phase 1 (questionWords + expansionModifiers + commercialModifiers.*.terms als Seed-Suffixe/Praefixe). (2) Faktor A (Purchase-Modifier) des Commercial-Intent-Score in opportunity-scoring.md — Matching IMMER ueber normalize-de.foldKey() (Umlaut-tolerant), longest-match-first, hoechster Score gewinnt. Quellen: netspirits.de/blog/keyword-recherche, fairrank.de/keywordkoenig.",
+  "questionWords": [
+    "wer",
+    "was",
+    "wie",
+    "warum",
+    "weshalb",
+    "weswegen",
+    "wozu",
+    "womit",
+    "worauf",
+    "worueber",
+    "woran",
+    "wobei",
+    "wo",
+    "wohin",
+    "woher",
+    "wann",
+    "welcher",
+    "welche",
+    "welches",
+    "welchen",
+    "welchem",
+    "wie viel",
+    "wie viele",
+    "wie lange",
+    "wie oft",
+    "wie teuer",
+    "lohnt sich",
+    "kann man",
+    "darf man",
+    "muss man",
+    "braucht man",
+    "ist",
+    "sind",
+    "macht",
+    "kostet",
+    "gibt es",
+    "funktioniert",
+    "bedeutet"
+  ],
+  "expansionModifiers": [
+    "fuer",
+    "mit",
+    "ohne",
+    "bei",
+    "ab",
+    "bis",
+    "trotz",
+    "statt",
+    "fuer anfaenger",
+    "fuer kinder",
+    "fuer senioren",
+    "fuer einsteiger",
+    "selbst machen",
+    "selber machen",
+    "selbst bauen",
+    "selber bauen",
+    "anleitung",
+    "tipps",
+    "checkliste",
+    "vorlage",
+    "muster",
+    "beispiel",
+    "in der naehe",
+    "online",
+    "2026"
+  ],
+  "commercialModifiers": {
+    "_note": "Faktor A im CIS. Score = hoechster gematchter Bucket. Reine Heuristik (DACH-Kontext), justierbar.",
+    "direct_purchase": {
+      "score": 200,
+      "terms": [
+        "kaufen",
+        "bestellen",
+        "online kaufen",
+        "guenstig kaufen",
+        "jetzt kaufen",
+        "shop",
+        "versandkostenfrei",
+        "lieferung",
+        "bestellen online",
+        "preis kaufen"
+      ]
+    },
+    "strong_evaluation": {
+      "score": 120,
+      "terms": [
+        "preis",
+        "preise",
+        "kosten",
+        "preisvergleich",
+        "tarif",
+        "tarife",
+        "angebot",
+        "angebote",
+        "rabatt",
+        "schnaeppchen",
+        "ratenkauf",
+        "finanzierung",
+        "guenstig",
+        "billig",
+        "preiswert",
+        "gebraucht",
+        "gebraucht kaufen"
+      ]
+    },
+    "light_evaluation": {
+      "score": 50,
+      "terms": [
+        "beste",
+        "bester",
+        "bestes",
+        "top",
+        "test",
+        "testsieger",
+        "vergleich",
+        "vergleichstest",
+        "erfahrung",
+        "erfahrungen",
+        "erfahrungsbericht",
+        "bewertung",
+        "bewertungen",
+        "meinungen",
+        "empfehlung",
+        "empfehlungen",
+        "alternative",
+        "alternativen",
+        "vs",
+        "gegen",
+        "unterschied",
+        "stiftung warentest",
+        "ratgeber"
+      ]
+    },
+    "informational": {
+      "score": 0,
+      "terms": [
+        "was ist",
+        "wie funktioniert",
+        "definition",
+        "bedeutung",
+        "erklaerung",
+        "erklaert",
+        "grundlagen",
+        "einfach erklaert"
+      ]
+    }
+  },
+  "urgencyTerms": {
+    "_note": "Faktor C im CIS (Dringlichkeit). Score additiv, gedeckelt 100.",
+    "high": {
+      "score": 100,
+      "terms": [
+        "sofort",
+        "notfall",
+        "dringend",
+        "heute",
+        "schnell",
+        "express",
+        "24h",
+        "ueber nacht"
+      ]
+    },
+    "medium": {
+      "score": 60,
+      "terms": ["in der naehe", "vor ort", "termin", "verfuegbar", "lieferbar"]
+    },
+    "low": { "score": 30, "terms": ["bald", "demnaechst", "planen"] }
+  }
+}

@@ -1,11 +1,11 @@
 ---
 name: article-create
-description: Legt einen neuen Artikel/eine neue Seite in der projekt-typischen Pflicht-Struktur an. Garantiert die Pflicht-Ordnerstruktur unter artikel/content/<slug>/ mit den vier Pflichtdateien artikel.md, seo.md, <cms>.html (CMS-Dateiname laut projekt-eigener CLAUDE.md, z.B. wordpress.html, shopify.html, webflow.html) und artikel.docx. Nutze diesen Skill IMMER, wenn der User einen neuen Artikel, eine neue Seite, einen neuen Beitrag, eine neue Landingpage oder neuen Content fuer eine URL anlegen moechte. Trigger auch bei "neuer Artikel", "Artikel erstellen", "Seite anlegen", "Content fuer /url/", "Beitrag fuer [Thema]", "neue Leistungsseite", "Landingpage erstellen", "SEO-Artikel erstellen". Laeuft zusammen mit dem seo-content-writer-Skill, wenn der Inhalt SEO-optimiert sein soll: der seo-content-writer liefert den Text und die Meta-Tags, dieser Skill sorgt dafuer, dass alles in die richtige Struktur einsortiert wird. Vor jedem Schreibvorgang ist wissensbasis/tone-of-voice.md zu laden und der Voice-Block aus Abschnitt 16 als Stil-Vorgabe an alle Schreib-Skills mitzugeben; nach dem Schreibvorgang wird die Checkliste aus Abschnitt 15 angewandt. Ohne Voice-Vorbereitung kein Text.
+description: Legt einen neuen Artikel/eine neue Seite in der projekt-typischen Pflicht-Struktur an. Garantiert die Pflicht-Ordnerstruktur unter artikel/content/<content-typ>/<slug>/ mit den vier Pflichtdateien artikel.md, seo.md, <cms>.html (CMS-Dateiname laut projekt-eigener CLAUDE.md, z.B. wordpress.html, shopify.html, webflow.html) und artikel.docx. Nutze diesen Skill IMMER, wenn der User einen neuen Artikel, eine neue Seite, einen neuen Beitrag, eine neue Landingpage oder neuen Content fuer eine URL anlegen moechte. Trigger auch bei "neuer Artikel", "Artikel erstellen", "Seite anlegen", "Content fuer /url/", "Beitrag fuer [Thema]", "neue Leistungsseite", "Landingpage erstellen", "SEO-Artikel erstellen". Laeuft zusammen mit dem seo-content-writer-Skill, wenn der Inhalt SEO-optimiert sein soll: der seo-content-writer liefert den Text und die Meta-Tags, dieser Skill sorgt dafuer, dass alles in die richtige Struktur einsortiert wird. Vor jedem Schreibvorgang ist wissensbasis/tone-of-voice.md zu laden und der Voice-Block aus Abschnitt 16 als Stil-Vorgabe an alle Schreib-Skills mitzugeben; nach dem Schreibvorgang wird die Checkliste aus Abschnitt 15 angewandt. Ohne Voice-Vorbereitung kein Text.
 ---
 
 # article-create
 
-Legt einen neuen Artikel-Ordner unter `artikel/content/<slug>/` an und erzeugt die vier Pflichtdateien gemäß der Artikel-Ordnerkonvention aus der projekt-eigenen `CLAUDE.md`.
+Legt einen neuen Artikel-Ordner unter `artikel/content/<content-typ>/<slug>/` an und erzeugt die vier Pflichtdateien gemäß der Artikel-Ordnerkonvention aus der projekt-eigenen `CLAUDE.md`.
 
 ## Warum dieser Skill existiert
 
@@ -21,13 +21,26 @@ Ohne diesen Skill landen Artikel in chaotischen Unterordnern mit unterschiedlich
 
 | Skill | Rolle |
 |---|---|
-| `seo-content-writer` | Liefert den SEO-optimierten Fließtext + Meta-Vorschläge. Output → `artikel.md` + `seo.md` |
-| `meta-tags-ctr` / `meta-tags-optimizer` | Erzeugt CTR-optimierte Title/Description. Output → `seo.md` |
-| `schema-markup-generator` | Erzeugt JSON-LD für FAQ/Service/LocalBusiness/Product. Output → `seo.md` |
+| `seo-page-research` | **Vorgelagerter Recherche-Skill (6 Phasen: 1, 2, 2b, 3, 4, 5).** Liefert das verbindliche Briefing `seo/briefing-<slug>.md` + `seo/cluster-<slug>.csv` + `seo/cannibalization-<slug>.md`. Ist die primäre Input-Quelle für diesen Skill (sofern im Projekt vorhanden). |
+| `seo-content-writer` * | Liefert den SEO-optimierten Fließtext + Meta-Vorschläge. Output → `artikel.md` + `seo.md` |
+| `meta-tags-ctr` */ `meta-tags-optimizer` * | Erzeugt CTR-optimierte Title/Description. Output → `seo.md`. Im Template bevorzugt: `brand-meta-ctr` (Hausstil-Version) |
+| `schema-markup-generator` * | Erzeugt JSON-LD für FAQ/Service/LocalBusiness/Product. Output → `seo.md` |
 | `content-html-formatter` | Erzeugt `<cms>.html` aus `artikel.md` und `wissensbasis/html-elemente.md` |
-| `keyword-research`, `serp-analysis`, `competitor-analysis` | Liefern Recherche → `seo.md` (Keyword-Mapping, Konkurrenzanalyse) |
+| `keyword-research` *, `serp-analysis` *, `competitor-analysis` * | Generische Einzel-Recherche-Skills (Fallback, wenn kein `seo-page-research`-Briefing vorliegt) → `seo.md` |
 
-**Reihenfolge:** Wenn der User „SEO-Artikel" sagt, zuerst Recherche-Skills (sofern Daten fehlen), dann `seo-content-writer` für Text und Meta, dann diesen Skill für die Ablage. Wenn der User nur „leeren Artikel anlegen" sagt, nur diesen Skill ausführen und Templates befüllen.
+\* **Optionale Plugin-Skills** (z.B. aus dem `seo-geo-claude-skills`-Plugin) – nicht Teil dieses Templates. Sind sie nicht installiert, schreibt dieser Skill die Inhalte selbst nach den Templates unten und den Regeln der `tone-of-voice.md`; die Struktur-Garantie dieses Skills hängt an keinem Plugin.
+
+**Durchgängiger Workflow (Standardfall):**
+
+```
+seo-page-research  →  article-create  →  content-html-formatter
+(Briefing in seo/)    (4 Pflichtdateien)   (<cms>.html)
+```
+
+**Reihenfolge:**
+- **Wenn ein Briefing `seo/briefing-<slug>.md` existiert** (Normalfall nach `seo-page-research`): Dieses Briefing ist die **verbindliche Quelle**. Siehe Schritt 0 Punkt 5 „Briefing-First".
+- **Wenn der User „SEO-Artikel" ohne vorheriges Briefing sagt:** zuerst `seo-page-research` empfehlen/ausführen, sonst die generischen Recherche-Skills, dann `seo-content-writer`, dann diesen Skill.
+- **Wenn der User „leeren Artikel anlegen" sagt:** nur diesen Skill, Templates mit `[TODO]` befüllen.
 
 **Voice-Pflicht:** Bei jedem Aufruf eines Schreib-Skills (`seo-content-writer`, `meta-tags-ctr`, `meta-tags-optimizer`, `schema-markup-generator`-FAQ-Antworten) wird der Voice-Block aus `wissensbasis/tone-of-voice.md` Abschnitt 16 als Stil-Vorgabe mitgegeben. Ohne Voice-Block driftet der Output in Generic-AI-Sprache, was vom Kunden in der Regel abgelehnt wird.
 
@@ -37,8 +50,12 @@ Ohne diesen Skill landen Artikel in chaotischen Unterordnern mit unterschiedlich
 
 Der User liefert:
 1. **URL oder Slug** der Seite (z.B. `/leistungen/produkt-x/` → Slug `produkt-x`)
-2. **Content-Typ:** Portfolio-/Blog-Beitrag, Leistungsseite, Produktseite oder Landingpage (steuert Struktur in `artikel.md`)
-3. **Optional:** Bestehender Text/Markdown, oder Inputs für `seo-content-writer`
+2. **Content-Typ** laut Content-Typ→Ordner-Tabelle in der projekt-eigenen `CLAUDE.md` (z.B. Ratgeber, Beratung, Produktbeschreibung, Kollektionsseite, Profilseite, Landingpage). Er steuert die Struktur in `artikel.md` **und** das Ordner-Segment `<content-typ>` unter `artikel/content/`.
+3. **Autor-Slug** (Pfad: `wissensbasis/autoren/<slug>.md`). Wenn der User keinen Autor nennt:
+   - Bei nur einem aktiven Autor im Verzeichnis: still diesen verwenden und im finalen Bericht vermerken
+   - Bei mehreren aktiven Autoren: gezielt nachfragen, wer dieses Stück verantwortet
+   - Bei keinem passenden Eintrag: STOP, erst eine neue Autoren-Datei nach dem Schema in `wissensbasis/autoren/README.md` anlegen, dann weiter
+4. **Optional:** Bestehender Text/Markdown, oder Inputs für `seo-content-writer`
 
 Wenn etwas fehlt, **gezielt nachfragen** statt raten.
 
@@ -57,23 +74,42 @@ Vor jedem `artikel.md`-Schreibvorgang **muss** Folgendes geladen worden sein:
 
 2. **`CLAUDE.md`** im Projekt-Root lesen, insbesondere:
    - **CMS-Dateiname** für den dritten Pflicht-File (z.B. `wordpress.html`, `shopify.html`, `webflow.html`, `cms.html`). Steht entweder in der „Über"-Sektion, in der „Quellenpfade"-Baumstruktur oder explizit als Zeile `**CMS-Dateiname:** <name>.html`.
-   - **Domain & URL-Schema** für Canonical und interne Links (z.B. `https://www.beispielkunde.de`).
+   - **Domain & URL-Schema** für Canonical und interne Links (z.B. `https://www.sonnenwerk-solar.de`).
    - **Anrede & Tonalität** als Schnellinfo (Voice-Datei bleibt die ausführliche Referenz).
-   - **Wissensbasis-Datei mit Seitenstruktur/URL-Liste** (z.B. `wissensbasis/<kurzform>-website-struktur.md` oder `wissensbasis/<kurzform>-seiten.md`) als Quelle für interne Verlinkung.
+   - **Wissensbasis-Datei mit Seitenstruktur/URL-Liste** (z.B. `wissensbasis/website-struktur.md` oder `wissensbasis/<kurzform>-seiten.md`) als Quelle für interne Verlinkung.
 
 3. Wenn der CMS-Dateiname nicht eindeutig in CLAUDE.md steht: **Default `cms.html`** verwenden und in der finalen Zusammenfassung an den User vermerken („CMS-Dateiname war nicht in CLAUDE.md gesetzt, habe `cms.html` verwendet. Bitte einmal eintragen, falls anders gewünscht.").
 
-### Schritt 1: Slug ermitteln
+4. **Autor-Datei laden:** `wissensbasis/autoren/<slug>.md` für den gewählten Autor lesen. Daraus für die spätere `seo.md` und `<cms>.html` übernehmen:
+   - `full_name` für Schema.org-Author + Quellen + Methodology
+   - `display_name`, `role`, `avatar_initials`, Bio-Kurz für die Author-Card (CMS-Element laut `wissensbasis/html-elemente.md`) im CMS-HTML
+   - `profile_url` für Author-Card-Link und Schema.org Person.url
+   Wenn die Datei fehlt, obwohl das Projekt Autoren-Attribution nutzt: STOP und User bitten, die Autoren-Datei nach `wissensbasis/autoren/README.md`-Schema anzulegen. Projekte ohne `wissensbasis/autoren/` überspringen diesen Schritt komplett (kein Autor-Block, keine Author-Card).
 
-- URL → Slug: letztes Pfadsegment ohne Slashes (z.B. `https://www.beispielkunde.de/leistungen/produkt-x/` → `produkt-x`)
+5. **Briefing-First (Pflicht-Check):** Prüfen, ob ein Briefing des `seo-page-research`-Skills existiert. Suchpfad: `seo/briefing-<slug>.md` (Slug aus URL/Topic ableiten). Auch `seo/cluster-<slug>.csv` und `seo/cannibalization-<slug>.md` mitnehmen, falls vorhanden.
+   - **Wenn ein Briefing existiert:** Es ist die **verbindliche Quelle**. Die H1/H2/H3-Outline, Meta-Title, Meta-Description, Keyword-Mapping, Internal-Linking-Plan, Schema-Empfehlung, Wordcount-Range und der Projekt-Content-Typ werden daraus übernommen — sie überschreiben die generischen `artikel.md`-Templates und die `[TODO]`-Felder im `seo-template.md`. Mapping siehe Schritt 4 „Briefing → seo.md/artikel.md".
+     - **Briefing-First ⇒ Subfolder-First:** Der im Briefing genannte **Projekt-Content-Typ** bestimmt das Ordner-Segment `<content-typ>` (via Content-Typ→Ordner-Tabelle in `CLAUDE.md`). Er hat Vorrang vor einer abweichenden User-Angabe.
+     - **Achtung:** Die Briefing-Dateisuche bleibt rein **SLUG-basiert** (`seo/briefing-<slug>.md`). Der Content-Typ steckt NICHT im Dateinamen in `seo/`.
+   - **Wenn kein Briefing existiert:** dem User `seo-page-research` für eine saubere Recherche empfehlen. Wenn der User ohne Briefing fortfahren will, mit den Templates + `[TODO]` arbeiten und das im Schlussbericht vermerken.
+   - **Slug-Konsistenz:** Der Artikel-Ordner `artikel/content/<content-typ>/<slug>/` MUSS denselben Slug tragen wie das Briefing, damit die Verknüpfung über alle Skills hält.
+   - **Recherche-Artefakte umziehen (nach Schritt 2):** Sobald der Artikel-Ordner existiert, die seitenbezogenen Recherche-Dateien aus `seo/` dorthin **verschieben** (nicht kopieren): `seo/briefing-<slug>.md`, `seo/cluster-<slug>.csv`, `seo/cannibalization-<slug>.md`, `seo/source-review-<slug>.md` → `artikel/content/<content-typ>/<slug>/`. Grund: `seo/` ist laut CLAUDE.md nur für projektweite, NICHT seitenbezogene SEO-Arbeit (Contentplan etc.). Die Recherche-Artefakte gehören zum Artikel. In `seo/` landen sie nur, weil der Artikel-Ordner zum Recherchezeitpunkt (seo-page-research) noch nicht existierte.
+
+### Schritt 1: Slug UND Content-Typ-Segment ermitteln
+
+- URL → Slug: letztes Pfadsegment ohne Slashes (z.B. `https://www.sonnenwerk-solar.de/leistungen/photovoltaik-wartung/` → `photovoltaik-wartung`)
 - Slug-Regeln: nur Kleinbuchstaben, Zahlen, Bindestriche. Keine Umlaute, keine Unterstriche, keine Leerzeichen.
-- **Niemals** einen bestehenden Ordner unter `artikel/content/<slug>/` überschreiben. Wenn der Ordner schon existiert: STOP und User fragen, ob überschrieben oder verworfen werden soll.
+- **Neben dem Slug wird auch das `<content-typ>`-Ordnersegment abgeleitet.** Quelle in dieser Reihenfolge: (1) Briefing (Projekt-Content-Typ, Briefing-First ⇒ Subfolder-First, siehe Schritt 0 Punkt 5), (2) explizite User-Angabe, (3) URL-Präfix via die **Taxonomie-Brücke in `CLAUDE.md`** (dort stehen die projekt-typischen Pfad-Präfixe, z.B. `/ratgeber/` oder `/blog/` → Ratgeber). Das konkrete Segment ergibt sich aus der **Content-Typ→Ordner-Tabelle in `CLAUDE.md`** (z.B. Ratgeber → `ratgeber/`, Beratung → `beratung/`, Produktbeschreibung → `produkte/`, Kollektionsseite → `kollektionen/`, Profilseite → `profile/`, Landingpage → `landingpages/`). Segment-Regeln: kleingeschrieben, umlautfrei.
+- **Niemals** einen bestehenden Ordner unter `artikel/content/<content-typ>/<slug>/` überschreiben. Wenn der Ordner schon existiert: STOP und User fragen, ob überschrieben oder verworfen werden soll.
 
 ### Schritt 2: Ordner anlegen
 
+Ordner inkl. Zwischenordner anlegen (`mkdir -p`-Semantik, legt das `<content-typ>`-Zwischensegment mit an, falls es noch nicht existiert):
+
 ```
-artikel/content/<slug>/
+artikel/content/<content-typ>/<slug>/
 ```
+
+Der Overwrite-Check aus Schritt 1 bezieht sich auf den vollständigen Pfad `<content-typ>/<slug>`.
 
 ### Schritt 3: artikel.md anlegen
 
@@ -86,7 +122,7 @@ artikel/content/<slug>/
 
 In allen Modi gleich: Anrede laut `tone-of-voice.md`, Perspektive laut `tone-of-voice.md`, Marken-Vokabular eingebunden, CTAs ausschließlich aus dem CTA-Pool.
 
-**Template je Content-Typ:**
+**Template je Content-Typ** – Zuordnung zur Sechser-Taxonomie: **Ratgeber/Beratung** → Template „Portfolio-/Blog-Beitrag" (Wortzahl dann laut Content-Typen-Tabelle der CLAUDE.md, z.B. Ratgeber 1500–3000); **Produktbeschreibung/Kollektionsseite/Profilseite** → Template „Leistungs-/Produktseite" (Wortzahl laut Tabelle, z.B. Produktbeschreibung 300–800); **Landingpage** → Template „Landingpage". Die Wortzahl-Angaben der Projekt-CLAUDE.md haben immer Vorrang vor den Template-Überschriften.
 
 #### Portfolio-/Blog-Beitrag (500–1500 Wörter)
 
@@ -209,16 +245,37 @@ Kern-Versprechen + Stilbeschreibung in einem Satz, nicht in fünf.]
 
 ### Schritt 4: seo.md anlegen
 
-Vorlage aus `references/seo-template.md` lesen und in `artikel/content/<slug>/seo.md` ablegen. Alle Pflicht-Sektionen befüllen, soweit Daten vorhanden. Fehlende Werte als `[TODO]` markieren. Domain und URL aus `CLAUDE.md` übernehmen.
+Vorlage aus `references/seo-template.md` lesen und in `artikel/content/<content-typ>/<slug>/seo.md` ablegen. Alle Pflicht-Sektionen befüllen, soweit Daten vorhanden. Fehlende Werte als `[TODO]` markieren. Domain und URL aus `CLAUDE.md` übernehmen.
+
+**Mapping „Briefing → seo.md / artikel.md"** (wenn `seo/briefing-<slug>.md` aus `seo-page-research` existiert, siehe Schritt 0 Punkt 5):
+
+| Briefing-Sektion | Ziel |
+|---|---|
+| 1. Strategische Übersicht → Cluster (Primary/Secondary/Supporting) | `seo.md` Keyword-Mapping |
+| 2. SERP-Analyse → Top-3-Konkurrenz, SERP-Composition | `seo.md` Konkurrenzanalyse + GSC-Performance |
+| 3. Content-Outline → Meta-Title, Meta-Description, URL-Slug | `seo.md` Meta-Tags + URL & Canonical |
+| 3. Content-Outline → H1 + H2/H3-Struktur | `artikel.md` Überschriften-Gerüst **und** `seo.md` H-Hierarchie |
+| 3. Content-Outline → Direct-Answer-Paragraph | `artikel.md` erster Absatz unter H1 |
+| 4. GEO-Pflicht → AI-Overview-Checkliste | `artikel.md` Schreibvorgaben + QA (GEO-Block, siehe QA-Checkliste) |
+| 4. GEO-Pflicht → Schema-Empfehlung | `seo.md` JSON-LD |
+| 5. Internal-Linking-Plan | `seo.md` Interne Verlinkung + echte Links in `artikel.md` |
+| 6. EEAT → Autor | `seo.md` Autor-Block (Slug aus `wissensbasis/autoren/`) |
+| 7. Cannibalization-Status | `seo.md` Umsetzungs-Checkliste (Konflikte vor Go-Live lösen) |
+| 8. Konkurrenz besser machen | Schreib-Leitplanken für `artikel.md` (Tiefe, Tabelle, FAQ) |
+| 9. Quellen & Research-Basis (Phase 2b) | `artikel.md` Faktenbasis (nur Faktenbasis-Quellen verwenden) |
+| 10. Action-Plan | `seo.md` Umsetzungs-Checkliste |
+
+Die im Briefing genannten FAQ-/PAA-Fragen werden in `artikel.md` als FAQ-Sektion umgesetzt (wortgleich, wo Phase-2-PAA verifiziert sind) und später vom `content-html-formatter` als FAQ-Element (laut `wissensbasis/html-elemente.md`) mit FAQPage-Schema gerendert.
 
 **Pflicht-Sektionen in seo.md:**
 - URL & Canonical
 - Meta-Tags (Title, Description, OG)
 - H-Hierarchie
 - Keyword-Mapping (Primär, Lokal/Branche, Informational)
-- Interne Verlinkung (Tabelle Ankertext → Ziel-URL, gegen `wissensbasis/<kurzform>-website-struktur.md` validiert)
-- JSON-LD (FAQPage / Service / LocalBusiness / Product, je nach Content-Typ)
-- Bild Alt-Texte
+- Interne Verlinkung (Tabelle Ankertext → Ziel-URL, gegen `wissensbasis/website-struktur.md` validiert)
+- JSON-LD (FAQPage / Service / LocalBusiness / Product / Article, je nach Content-Typ)
+- **Autor-Block:** Slug + `full_name` + `display_name` + `role` + `profile_url` aus `wissensbasis/autoren/<slug>.md` übernehmen. Im Article-JSON-LD wird `full_name` als `author.name` und `profile_url` als `author.url` gesetzt.
+- Bilder & Medien (inkl. Alt-Texte)
 - Umsetzungs-Checkliste
 - Quellenangabe + Stand
 
@@ -227,7 +284,7 @@ Vorlage aus `references/seo-template.md` lesen und in `artikel/content/<slug>/se
 Der CMS-Dateiname stammt aus `CLAUDE.md` (siehe Schritt 0). Zwei Optionen:
 
 **A) `wissensbasis/html-elemente.md` ist gefüllt:**
-→ Skill `content-html-formatter` aufrufen mit `artikel.md` als Input. Output direkt nach `artikel/content/<slug>/<cms>.html` schreiben.
+→ Skill `content-html-formatter` aufrufen mit `artikel.md` als Input. Output direkt nach `artikel/content/<content-typ>/<slug>/<cms>.html` schreiben. Der Formatter übernimmt dabei auch die **Bild-/Video-Auswahl** (Kontext-basiert aus `wissensbasis/medien/`, sofern das Projekt einen Medien-Katalog führt), die **Aufbereitung** via `prepare-media.py` (Aufruf mit `--content-type <content-typ>`; skaliert/zugeschnitten nach `artikel/content/<content-typ>/<slug>/bilder/`) und bindet die Medien mit der Artikel-Bildklasse aus `wissensbasis/html-elemente.md` + DUMMY-URL ein. Die Auswahl wird in `seo.md` („Bilder & Medien") dokumentiert.
 
 **B) `wissensbasis/html-elemente.md` ist noch unvollständig (TODO-Marker):**
 → `<cms>.html` als Platzhalter anlegen mit Inhalt:
@@ -244,11 +301,11 @@ Den Status klar in der finalen Zusammenfassung an den User kommunizieren.
 
 ### Schritt 6: artikel.docx erzeugen
 
-`references/create-docx.py` ausführen mit den Argumenten `<slug>` und Projekt-Root. Das Skript:
-- liest `artikel/content/<slug>/artikel.md`
-- liest `artikel/content/<slug>/seo.md` (für die Deckblatt-Infos)
+`references/create-docx.py` ausführen mit den Argumenten `<slug>`, Projekt-Root und dem Flag `--typ <content-typ>` (damit das Skript den typisierten Ordnerpfad findet). Das Skript:
+- liest `artikel/content/<content-typ>/<slug>/artikel.md`
+- liest `artikel/content/<content-typ>/<slug>/seo.md` (für die Deckblatt-Infos)
 - liest projekt-spezifische Markenname/CTA-Konfiguration aus `CLAUDE.md`, falls vorhanden
-- erzeugt `artikel/content/<slug>/artikel.docx` mit Deckblatt + Meta-Tabelle + Inhalt + interne-Links-Tabelle
+- erzeugt `artikel/content/<content-typ>/<slug>/artikel.docx` mit Deckblatt + Meta-Tabelle + Inhalt + interne-Links-Tabelle
 
 **Markdown-Support im artikel.md** (alles wird in echte Word-Elemente übersetzt, nicht als roher Markdown-Text):
 
@@ -273,7 +330,7 @@ Eine Zeile in `changelog/YYYY-MM-DD.md` (heutiges Datum) ergänzen, z.B.:
 
 ```markdown
 ## Artikel
-- Neuer Artikel `artikel/content/<slug>/` angelegt (Content-Typ: …, Wörter: …)
+- Neuer Artikel `artikel/content/<content-typ>/<slug>/` angelegt (Content-Typ: …, Wörter: …)
 ```
 
 Falls die Tagesdatei noch nicht existiert: anlegen mit `# YYYY-MM-DD – Kurztitel`.
@@ -300,19 +357,34 @@ Vor Abschluss: QA-Checkliste durchgehen. Wenn ein Punkt fehlt, korrigieren oder 
 
 ### Ordner und Dateien
 
-- [ ] `artikel/content/<slug>/` existiert
+- [ ] `artikel/content/<content-typ>/<slug>/` existiert (inkl. korrektem `<content-typ>`-Zwischensegment)
 - [ ] `artikel.md` existiert und enthält H1 + Inhalt
 - [ ] `seo.md` existiert und enthält alle Pflicht-Sektionen (auch wenn manche `[TODO]` sind)
 - [ ] `<cms>.html` existiert (entweder echter HTML-Output oder Platzhalter mit TODO-Kommentar). Dateiname stimmt mit dem in `CLAUDE.md` festgelegten CMS-Dateinamen überein.
 - [ ] `artikel.docx` existiert und ist > 0 Bytes
 - [ ] Slug entspricht URL-Slug (Kleinbuchstaben, Bindestriche, keine Umlaute/Unterstriche)
+- [ ] **Recherche-Artefakte umgezogen:** Falls ein `seo-page-research`-Briefing zugrunde lag, liegen `briefing-<slug>.md`, `cluster-<slug>.csv`, `cannibalization-<slug>.md`, `source-review-<slug>.md` jetzt im Artikel-Ordner `artikel/content/<content-typ>/<slug>/` (nicht mehr in `seo/`). `seo/` enthält nur noch projektweite Dateien.
 
 ### Inhalt
 
 - [ ] `artikel.md` enthält **keine** Meta-Daten am Anfang (kein Frontmatter, keine Title/Description-Tabelle)
 - [ ] H1 in `artikel.md` ist genau einmal vorhanden
 - [ ] **Voice-Check:** Checkliste aus `wissensbasis/tone-of-voice.md` Abschnitt 15 angewandt (Anrede, Perspektive, Marken-Vokabular, CTA aus Pool, Anekdoten, Em-Dash-Regel, echte Umlaute, Markenname konsistent)
-- [ ] Alle internen Links in `artikel.md` zeigen auf existierende Pfade aus `wissensbasis/<kurzform>-website-struktur.md` (oder analoger Datei laut CLAUDE.md)
+- [ ] Alle internen Links in `artikel.md` zeigen auf existierende Pfade aus `wissensbasis/website-struktur.md` (oder analoger Datei laut CLAUDE.md)
+
+### GEO-Check (Pflicht, wenn ein `seo-page-research`-Briefing existiert)
+
+Die „AI-Overview-Optimization-Checklist" aus dem Briefing (`seo/briefing-<slug>.md`, Abschnitt 4) gegen `artikel.md` durchgehen:
+
+- [ ] **Direct-Answer-Paragraph** (40–60 Wörter) direkt unter H1
+- [ ] **H2/H3 als Fragen**, gespiegelt aus den Phase-2-PAA des Briefings
+- [ ] **Verifizierte PAA wortgleich** als FAQ-Fragen übernommen (soweit Phase 2 sie geliefert hat)
+- [ ] **Fact-Density:** mind. 1 belegbare Statistik / benannte Quelle pro 150–200 Wörter
+- [ ] **Quellen mit Datum** inline genannt
+- [ ] **Mind. 1 Experten-Zitat** mit Credentials (für das Experten-Zitat-Element laut `wissensbasis/html-elemente.md`)
+- [ ] **Wordcount** in der Briefing-Range
+- [ ] **Schema-Empfehlung** aus Briefing in `seo.md` übernommen
+- [ ] **Cannibalization-Hinweise** aus `seo/cannibalization-<slug>.md` beachtet (z.B. kein Buy-CTA-Hero, wenn er mit einer bestehenden Produktseite kollidiert)
 
 ### Changelog
 
@@ -333,7 +405,7 @@ Am Ende immer berichten:
 
 ## Wichtige Regeln
 
-1. **Niemals außerhalb von `artikel/content/<slug>/` ablegen.** Auch nicht in `artikel/<slug>/` (alte Struktur), `seo/`, `tmp/` oder anderen Ordnern.
+1. **Niemals außerhalb von `artikel/content/<content-typ>/<slug>/` ablegen.** Das flache `artikel/content/<slug>/` (ohne `<content-typ>`-Zwischensegment) ist die **alte Struktur** und wird nur noch als tolerierter Rückwärts-Fall bei bestehenden Artikeln akzeptiert, für Neuanlagen NICHT mehr verwendet. Ebenfalls nicht in `artikel/<slug>/` (alte Struktur), `seo/`, `tmp/` oder anderen Ordnern ablegen.
 2. **Niemals andere Dateinamen verwenden.** Genau diese vier: `artikel.md`, `seo.md`, `<cms>.html` (CMS-Dateiname laut CLAUDE.md), `artikel.docx`. Keine Varianten wie `index.md`, `content.md`, `meta.md`, `final.docx`.
 3. **Niemals Meta-Daten in `artikel.md`.** Die gehören ausschließlich in `seo.md`. Wenn der User Meta-Daten reinpasten will, sauber auf beide Dateien aufteilen.
 4. **Slug ist URL-Slug.** Wenn die finale URL noch nicht klar ist, vorher mit dem User abstimmen, nicht raten.
@@ -345,15 +417,18 @@ Am Ende immer berichten:
 
 ## Kombination mit anderen Skills
 
-### „SEO-Artikel über X erstellen"
+### „SEO-Artikel über X erstellen" (Standard-Workflow)
 
 Empfohlene Reihenfolge:
-1. `keyword-research` → liefert Keyword-Set (falls noch nicht vorhanden)
-2. `competitor-analysis` → liefert Konkurrenz-Snapshot
-3. `seo-content-writer` → schreibt `artikel.md`-Inhalt + Meta-Vorschläge (mit Voice-Block aus Abschnitt 16 der `tone-of-voice.md`)
-4. `meta-tags-ctr` (optional) → optimiert Title/Description
-5. `schema-markup-generator` → erzeugt JSON-LD
-6. **`article-create`** → legt Ordner an, sortiert alle Outputs in `artikel.md` + `seo.md`, erzeugt `artikel.docx`
+1. **`seo-page-research`** → 6-Phasen-Recherche (Phasen 1, 2, 2b, 3, 4, 5), erzeugt `seo/briefing-<slug>.md` + `seo/cluster-<slug>.csv` + `seo/cannibalization-<slug>.md` + `seo/source-review-<slug>.md`
+2. **`article-create`** (dieser Skill) → liest das Briefing (Schritt 0 Punkt 5), legt `artikel/content/<content-typ>/<slug>/` mit den vier Pflichtdateien an, mappt Briefing → `seo.md`/`artikel.md` (Schritt 4)
+3. **`content-html-formatter`** → erzeugt `<cms>.html` aus `artikel.md` (wird in Schritt 5 dieses Skills aufgerufen)
+
+Optional dazwischen, wenn ein Detail fehlt:
+- `brand-meta-ctr` (bzw. Plugin-Skill `meta-tags-ctr`) → schärft Title/Description, falls das Briefing dort schwach ist
+- `schema-markup-generator` (Plugin, falls installiert) → ergänzt JSON-LD über die Briefing-Empfehlung hinaus
+
+Wenn **kein** Briefing existiert (Schnellfall ohne vorherige Recherche): Text + Meta über den `seo-content-writer`-Plugin-Skill, falls installiert – sonst schreibt dieser Skill selbst nach Template + `tone-of-voice.md`. Vorher dem User `seo-page-research` empfehlen.
 
 ### „Leeren Artikel-Ordner anlegen"
 
@@ -361,5 +436,5 @@ Nur `article-create` ausführen, mit minimalen Templates und allen Inhalten als 
 
 ### „Bestehende Seite extrahieren und in Struktur überführen"
 
-1. Puppeteer/Selenium-Extraktion (manuell oder via tmp/-Skript)
+1. Seiteninhalt per WebFetch holen (bei JS-lastigen Seiten: manuell aus dem Browser kopieren)
 2. **`article-create`** mit dem extrahierten Text als Input für `artikel.md`. Im `seo.md` IST-Stand und SEO-Probleme dokumentieren.

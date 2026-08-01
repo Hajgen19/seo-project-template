@@ -2,8 +2,9 @@
 
 ## URL & Canonical
 
-- **URL:** [https://www.<projekt-domain>/<slug>/]
-- **Canonical:** [https://www.<projekt-domain>/<slug>/]
+- **URL:** [TODO – volle URL; Domain aus `CLAUDE.md` > Über, Pfad-Präfix laut Taxonomie-Brücke, z.B. `https://www.sonnenwerk-solar.de/ratgeber/beispiel-slug/`]
+- **Canonical:** [TODO – in der Regel identisch mit der URL]
+- **Content-Typ:** [Ratgeber | Beratung | Produktbeschreibung | Kollektionsseite | Profilseite | Landingpage – laut Taxonomie-Brücke in `CLAUDE.md`; bestimmt Typ-Ordner und Pflicht-Elemente]
 - **Sprache:** [de-DE | en-US | …]
 - **Status:** [Entwurf | Bereit zum Einpflegen | Live]
 - **Stand:** [YYYY-MM-DD]
@@ -17,11 +18,17 @@
 
 | Feld | Wert | Zeichen |
 |---|---|---|
-| **Meta Title** | [TODO – max. 60 Zeichen, mit Hauptkeyword + Marke] | [n/60] |
-| **Meta Description** | [TODO – 140–160 Zeichen, Anrede laut Voice, CTA am Ende aus Voice-Pool] | [n/160] |
+| **Meta Title** | [TODO – max. 60 Zeichen, Hauptkeyword vorne; Marke nur laut Projektkonvention in `CLAUDE.md` (Default: ohne)] | [n/60] |
+| **Meta Description** | [TODO – max. 155 Zeichen, Anrede laut Voice, CTA am Ende aus Voice-Pool] | [n/155] |
 | **OG Title** | [TODO – kann von Meta Title abweichen] | – |
 | **OG Description** | [TODO] | – |
 | **OG Image** | [TODO – konkretes Bild auswählen, idealerweise im Marken-Bildlook] | – |
+| **CMS-Auszug/Excerpt (optional)** | [TODO – nur falls das CMS ein separates Auszug-Feld führt; 150–230 Zeichen, erzählerischer als die Meta-Description] | [n] |
+
+> **Auszug-Hinweis:** Manche CMS/Themes führen ein separates Auszug-Feld (z.B. Blog-Excerpt), das Listen-Teaser
+> oder die Article-Schema-`description` speist. Ob und wie das Feld belegt wird, steht in der projekt-eigenen
+> `CLAUDE.md` bzw. der Theme-Doku. Der Auszug darf länger und erzählerischer sein als die Meta-Description
+> (konkreter Nutzen + Glaubwürdigkeits-Anker). Im Marken-Voice (siehe `wissensbasis/tone-of-voice.md`).
 
 ---
 
@@ -76,6 +83,20 @@ Beim Einpflegen ins CMS als echte Verlinkungen setzen. Quelle für gültige Ziel
 
 ---
 
+## Autor
+
+Persistente Verknüpfung Artikel↔Autor. Wird vom `content-html-formatter` beim Rendern der Author-Card (CMS-Element laut `wissensbasis/html-elemente.md`) und vom Article-JSON-LD (`author`-Property) automatisch herangezogen. Die Werte werden aus `wissensbasis/autoren/<slug>.md` gelesen, hier wird nur der Slug referenziert.
+
+| Feld | Wert |
+|---|---|
+| **Slug** | [TODO – z.B. `sandra-w`, muss als Datei `wissensbasis/autoren/<slug>.md` existieren] |
+| **Display-Name** | [aus Autoren-Datei `display_name`, z.B. „Sandra W."] |
+| **Voller Name** | [aus Autoren-Datei `full_name`, z.B. „Sandra Weber" – wird im Schema.org-Author und Methodology-Block verwendet] |
+| **Rolle** | [aus Autoren-Datei `role`, z.B. „Gründerin Sonnenwerk Solar GmbH"] |
+| **Profil-URL** | [aus Autoren-Datei `profile_url`, z.B. `/ueber-uns/`] |
+
+---
+
 ## JSON-LD: Schema-Markup
 
 > **Voice-Hinweis:** FAQPage-Antworten innerhalb des Schemas müssen exakt mit den Antworten in `artikel.md` übereinstimmen und damit auch im Marken-Stil verfasst sein (Bestätigung am Anfang, Reassurance am Ende, Marken-Vokabular).
@@ -94,12 +115,14 @@ Beim Einpflegen ins CMS als echte Verlinkungen setzen. Quelle für gültige Ziel
 
 ---
 
-## Bild Alt-Texte
+## Bilder & Medien
 
-| Bild-Position | Alt-Text |
-|---|---|
-| Hero/Header | [TODO – mit Hauptkeyword + ggf. Ortsbezug/Branche] |
-| [Sektion] | [TODO] |
+Konkrete Dateien aus dem Medien-Katalog `wissensbasis/medien/` auswählen (per Tag-Suche zum Sektions-Thema), sofern das Projekt einen Katalog führt. Pro Bild den lokalen Namen + die CDN-URL eintragen. Wenn ein Bild noch nicht hochgeladen ist (Status `nur-lokal`), CDN-URL als `TODO` lassen — der `content-html-formatter` setzt dann einen TODO-Kommentar statt einer erfundenen URL. Vorsicht-Flags aus dem Katalog beachten (z.B. Motive, die laut Katalog nicht als typisches Produkt gezeigt werden sollen).
+
+| Bild-Position | Lokal-Datei (Ordner laut Medien-Katalog) | CDN-URL | Alt-Text |
+|---|---|---|---|
+| Hero/Header | [TODO – Katalog-Eintrag] | [CDN-URL oder TODO] | [TODO – mit Hauptkeyword + ggf. Orts-/Branchenbezug] |
+| [Sektion] | [TODO] | [TODO] | [TODO] |
 
 ---
 
@@ -140,5 +163,5 @@ Beim Einpflegen ins CMS als echte Verlinkungen setzen. Quelle für gültige Ziel
 
 ---
 
-*Quelle: [TODO – Keyword Planner, Konkurrenzanalyse, GSC-Daten der Property `<gsc-property>`, Stand YYYY-MM-DD]*
+*Quelle: [TODO – Keyword Planner, Konkurrenzanalyse, GSC-Daten der Property laut `CLAUDE.md` > Analytics-Anbindung, Stand YYYY-MM-DD]*
 *Stand: [YYYY-MM-DD]*

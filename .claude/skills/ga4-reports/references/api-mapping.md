@@ -73,7 +73,7 @@ Stand: [STAND_DATUM]
 
 ### Schlüsselereignisse einzeln abfragen
 
-Für [PROJEKT_NAME] sind folgende Schlüsselereignisse konfiguriert. **Hinweis:** Testwerte – beim Projektsetup durch die tatsächlich konfigurierten Schlüsselereignisse ersetzen.
+Für [KUNDENNAME] sind folgende Schlüsselereignisse konfiguriert. **Hinweis:** Testwerte – beim Projektsetup durch die tatsächlich konfigurierten Schlüsselereignisse ersetzen.
 
 | Schlüsselereignis | Metrik (Anzahl) | Metrik (Session-Rate) | Metrik (User-Rate) |
 |---|---|---|---|
@@ -180,7 +180,7 @@ Für [PROJEKT_NAME] sind folgende Schlüsselereignisse konfiguriert. **Hinweis:*
 | Ereignisanzahl | `eventCount` | Metrik | |
 | Schlüsselereignisse | `keyEvents` | Metrik | |
 
-**Einschränkung:** Suchanfragen (Keywords) sind über die GA4 API NICHT verfügbar. Dafür muss die Google Search Console API (GSC MCP) genutzt werden.
+**Einschränkung:** Suchanfragen (Keywords) sind über die GA4 API NICHT verfügbar. Dafür die Google Search Console über den MCP-Server `mcpwerk-gsc` aus der `.mcp.json` des Projekts abfragen, z. B. `mcp__mcpwerk-gsc__get_search_analytics` (bei anders benannten Servern nur den Präfix anpassen).
 
 ---
 

@@ -1,0 +1,7 @@
+cluster_id,role,keyword,volume_gkp,volume_validated,validation_source,volume_conflict,competition,top_of_page_bid_eur,intent_class,page_type_hint,long_tail,trend_3m,trend_yoy,saisonalitaet,notes
+1,primary,"BEISPIEL: wärmepumpe altbau",~8100,~5400,ahrefs,flag,medium,3.20-5.50,Question,Pillar,no,stable,+8%,,Cluster-Anker
+1,secondary,"BEISPIEL: luftwärmepumpe altbau",~1900,~1500,ahrefs,no,low,2.80-4.20,Comparison,Comparison,no,stable,+15%,,
+1,secondary,"BEISPIEL: wärmepumpe altbau geeignet",~720,~600,ahrefs,no,low,1.90-3.40,Bool,FAQ,yes,stable,+5%,,
+1,supporting,"BEISPIEL: wärmepumpe altbau heizkörper tausch",~210,n/a,n/a,n/a,low,1.50-2.20,Question,FAQ,yes,stable,+22%,,
+1,supporting,"BEISPIEL: wärmepumpe altbau erfahrung",~580,~520,ahrefs,no,low,1.10-1.80,Reason,Blog,no,stable,+18%,,
+1,supporting,"BEISPIEL: jaz wärmepumpe altbau",~150,n/a,n/a,n/a,low,1.20-2.10,Short fact,FAQ,no,stable,+30%,,Niche-Wachstum

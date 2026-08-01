@@ -1,22 +1,28 @@
 ---
 name: ga4-reports
 description: >
-  Zieht GA4-Daten über den MCP und präsentiert sie faktenbasiert mit voller Nachvollziehbarkeit.
+  Zieht GA4-Daten ueber den MCP und praesentiert sie faktenbasiert mit voller Nachvollziehbarkeit.
   Nutze diesen Skill immer, wenn der Nutzer nach GA4-Daten, Website-Traffic, Seitenaufrufen,
-  Sitzungen, Nutzerzahlen, Conversions, Schlüsselereignissen, Bounce Rate, Engagement,
+  Sitzungen, Nutzerzahlen, Conversions, Schluesselereignissen, Bounce Rate, Engagement,
   Kanalperformance, Landingpage-Daten, organischer Suche oder beliebigen Google Analytics 4
   Reporting-Aufgaben fragt. Auch bei explorativen Fragen wie "Welcher Kanal bringt die meisten
   Conversions?" oder "Wie performt Seite X?" soll dieser Skill getriggert werden. Trigger auch
-  bei Erwähnungen von GA4, Google Analytics, Traffic-Analyse, Seitenperformance oder Webanalyse.
+  bei Erwaehnungen von GA4, Google Analytics, Traffic-Analyse, Seitenperformance oder Webanalyse.
 ---
 
 # GA4 Reports Skill
 
-Dieser Skill zieht GA4-Daten über den GA4-Analytics MCP und gibt sie **ausschließlich faktenbasiert** aus. Der Kern: Keine Interpretation, keine Beschönigung, nur Daten mit voller Nachvollziehbarkeit.
+Dieser Skill zieht GA4-Daten über den MCP-Server `mcpwerk-ga4` und gibt sie **ausschließlich faktenbasiert** aus. Der Kern: Keine Interpretation, keine Beschönigung, nur Daten mit voller Nachvollziehbarkeit.
 
 ## Warum das wichtig ist
 
 Wenn ein Nutzer GA4-Daten anfragt, will er die exakten Zahlen – so wie sie in Google Analytics stehen. Jede Abweichung, jede Interpretation, jede Annahme untergräbt das Vertrauen. Der Nutzer muss die Zahlen in GA4 nachprüfen können und dieselben Werte sehen. Deshalb ist dieser Skill so aufgebaut, dass jeder Schritt transparent und verifizierbar ist.
+
+## Voraussetzungen
+
+- **MCP-Server:** Der GA4-Zugriff läuft über den gehosteten Server `mcpwerk-ga4` aus der `.mcp.json` des Projekts (im Template bereits vorkonfiguriert, gehostet unter mcp.mcpwerk.com). Keine lokale Installation nötig.
+- **Authentifizierung:** Einmalig per OAuth über den Befehl `/mcp` (Server `mcpwerk-ga4` auswählen und das Google-Konto mit GA4-Zugriff verbinden).
+- **Tool-Präfix:** Alle Tool-Namen in diesem Skill beginnen mit `mcp__mcpwerk-ga4__`. Läuft der GA4-Server im eigenen Setup unter anderem Namen (z. B. als claude.ai-Connector), muss nur der Präfix angepasst werden, die Tool-Namen dahinter bleiben gleich.
 
 ## Property
 
@@ -73,7 +79,7 @@ Warte auf die Bestätigung des Nutzers, bevor du den API-Call machst. Wenn der N
 
 ### Schritt 3: Daten ziehen
 
-Führe den API-Call über `mcp__ga4-analytics__get_ga4_data` aus mit den bestätigten Parametern.
+Führe den API-Call über `mcp__mcpwerk-ga4__get_ga4_data` aus mit den bestätigten Parametern.
 
 Beachte bei der Ausgabe:
 - **Dezimalwerte** (Raten wie engagementRate, bounceRate): In Prozent umrechnen (0.72 → 72,0%)
@@ -131,7 +137,7 @@ Das ist genauso wichtig wie das, was er tut:
 - **Keine unaufgeforderten Vergleiche.** Zeige keinen Vorjahresvergleich, es sei denn der Nutzer fragt danach.
 - **Kein Fazit, keine Zusammenfassung.** Die Tabelle spricht für sich.
 
-## [PROJEKT_NAME] Schlüsselereignisse
+## [KUNDENNAME] Schlüsselereignisse
 
 Diese Schlüsselereignisse sind in der Property konfiguriert und können einzeln abgefragt werden. **Hinweis:** Die folgende Tabelle enthält Testwerte – beim Projektsetup durch die tatsächlich konfigurierten Schlüsselereignisse ersetzen.
 
@@ -166,6 +172,7 @@ Manche Analysen sind in der exakten Form nicht über die API machbar. Statt einf
 | Trichter-Analyse (Funnel) | Schrittweise Conversion-Analyse nicht abfragbar | Einzelne Schritte separat abfragen: z.B. Seitenaufrufe Schritt 1 vs. Events Schritt 2 |
 | Segmentüberlappung | Nur in GA4-Oberfläche | Einzelne Segmente separat abfragen und vergleichen |
 | Kohortenanalyse (erweitert) | Nur Basis-Kohorten über API | `newVsReturning` Dimension für einfache Kohortenvergleiche |
+| Suchanfragen (Keywords) | Nicht in der GA4 API enthalten | Google Search Console über den MCP-Server `mcpwerk-gsc` abfragen, z. B. `mcp__mcpwerk-gsc__get_search_analytics` |
 
 **Ablauf bei eingeschränkten Anfragen:**
 1. Erkläre, dass die exakte Analyse (z.B. sequentielle Pfadanalyse) nur in der GA4-Oberfläche möglich ist. Nenne den Pfad: z.B. GA4 → Erkunden → Pfadanalyse.

@@ -3,19 +3,25 @@ create-docx.py – Erzeugt artikel.docx aus artikel.md (+ optional seo.md fuer d
 
 Generische Version: liest projektspezifische Werte aus CLAUDE.md / seo.md, statt sie hartzucodieren.
 
-Nutzung: python create-docx.py <slug> [<projekt-root>]
+Nutzung: python create-docx.py <slug> [<projekt-root>] [--typ <content-typ-segment>]
+
+Der Ordner liegt typisiert unter artikel/content/<typ>/<slug>/ (typ = ratgeber | beratung |
+produkte | kollektionen | profile | landingpages). Ohne --typ wird der Ordner automatisch
+per glob artikel/content/*/<slug> gefunden; als Rueckwaerts-Fallback greift der flache Alt-Pfad
+artikel/content/<slug>.
 
 Beispiel:
-    python create-docx.py mein-artikel
-    python create-docx.py mein-artikel "C:/Users/.../projekt-x"
+    python create-docx.py solaranlage-kosten --typ ratgeber
+    python create-docx.py photovoltaik-wartung "C:/Projekte/beispielkunde" --typ produkte
+    python create-docx.py mein-artikel        (Auto-Erkennung des Typ-Ordners per glob)
 
 Liest:
-    artikel/content/<slug>/artikel.md
-    artikel/content/<slug>/seo.md     (optional, fuer Meta-Daten auf dem Deckblatt)
-    CLAUDE.md                         (optional, fuer Markenname, CMS-Hinweis, CTA-Pattern)
+    artikel/content/<typ>/<slug>/artikel.md
+    artikel/content/<typ>/<slug>/seo.md   (optional, fuer Meta-Daten auf dem Deckblatt)
+    CLAUDE.md                             (optional, fuer Markenname, CMS-Hinweis, CTA-Pattern)
 
 Schreibt:
-    artikel/content/<slug>/artikel.docx
+    artikel/content/<typ>/<slug>/artikel.docx
 
 Konfiguration via CLAUDE.md (alle optional, sonst sinnvolle Defaults):
     Markenname:          aus erster H1 in CLAUDE.md (z.B. "# CLAUDE.md - Beispielkunde Projekt")
@@ -37,6 +43,7 @@ Markdown-Support:
 Abhaengigkeit:  pip install python-docx
 """
 
+import glob
 import os
 import re
 import sys
@@ -417,8 +424,24 @@ def setup_styles(doc):
 # Hauptbau
 # ---------------------------------------------------------------------------
 
-def build_doc(slug, root):
-    artikel_dir = os.path.join(root, "artikel", "content", slug)
+def resolve_article_dir(root, slug, subfolder=None):
+    """Findet den Artikel-Ordner in der typisierten Struktur artikel/content/<typ>/<slug>/.
+    Reihenfolge: (1) expliziter subfolder, (2) glob artikel/content/*/<slug>, (3) flacher
+    Alt-Pfad artikel/content/<slug> als Rueckwaerts-Fallback (Bestandsartikel)."""
+    content_root = os.path.join(root, "artikel", "content")
+    if subfolder:
+        return os.path.join(content_root, subfolder, slug)
+    hits = [h for h in glob.glob(os.path.join(content_root, "*", slug)) if os.path.isdir(h)]
+    if len(hits) == 1:
+        return hits[0]
+    if len(hits) > 1:
+        print(f"Warnung: '{slug}' in mehreren Typ-Ordnern gefunden: {hits}. Bitte --typ angeben.")
+        return hits[0]
+    return os.path.join(content_root, slug)  # flacher Alt-Pfad (Sicherheitsnetz)
+
+
+def build_doc(slug, root, subfolder=None):
+    artikel_dir = resolve_article_dir(root, slug, subfolder)
     artikel_path = os.path.join(artikel_dir, "artikel.md")
     seo_path = os.path.join(artikel_dir, "seo.md")
     out_path = os.path.join(artikel_dir, "artikel.docx")
@@ -459,7 +482,7 @@ def build_doc(slug, root):
     run.font.color.rgb = RGBColor(130, 130, 130)
 
     deck_lines = [
-        f"Seite: /{slug}/",
+        f"Seite: {meta.get('url') or '/' + slug + '/'}",
         f"Erstellt: {date.today().isoformat()}",
         f"Wörter: {word_count:,}".replace(",", "."),
     ]
@@ -534,12 +557,26 @@ def build_doc(slug, root):
 
 
 def main():
-    if len(sys.argv) < 2:
+    # Benannte Flags --typ/--content-type herausfiltern (KEIN Positionsargument, um nicht
+    # mit <root>=argv[2] zu kollidieren). Rest bleibt positional: <slug> [<root>].
+    argv = sys.argv[1:]
+    subfolder = None
+    positional = []
+    i = 0
+    while i < len(argv):
+        a = argv[i]
+        if a in ("--typ", "--content-type", "--subfolder"):
+            subfolder = argv[i + 1] if i + 1 < len(argv) else None
+            i += 2
+            continue
+        positional.append(a)
+        i += 1
+    if not positional:
         print(__doc__)
         sys.exit(1)
-    slug = sys.argv[1]
-    root = sys.argv[2] if len(sys.argv) >= 3 else os.getcwd()
-    build_doc(slug, root)
+    slug = positional[0]
+    root = positional[1] if len(positional) >= 2 else os.getcwd()
+    build_doc(slug, root, subfolder)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "deep-keyword-gap-research / 00_scope.json",
+  "type": "object",
+  "required": ["run_id", "niche", "niche_slug", "geo", "language", "seeds", "customer_id"],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "ISO-Zeitstempel des Laufs; identisch in allen Artefakten (Resume-Erkennung). Wird vom Modell gesetzt, NICHT im Skript (Date.now-Verbot in Workflows gilt dort)."
+    },
+    "niche": { "type": "string", "description": "Themen-/Nischenname, z. B. 'Balkonkraftwerk'." },
+    "niche_slug": {
+      "type": "string",
+      "description": "slugify(niche) — Ordnername unter seo/keyword-gap/."
+    },
+    "goal": {
+      "type": "string",
+      "description": "Geschäftsziel/Angebot der Nische (für Business-Relevanz)."
+    },
+    "geo": {
+      "type": "array",
+      "items": { "enum": ["DE", "AT", "CH"] },
+      "description": "Ziel-Länder, getrennt erhoben. Default ['DE']."
+    },
+    "language": { "type": "string", "default": "de" },
+    "seeds": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "5–15 Seed-Keywords."
+    },
+    "competitors": {
+      "type": "array",
+      "items": { "type": "string", "format": "uri" },
+      "description": "3–8 Wettbewerber-URLs (GKP-URL-Input + Competitor-Gap)."
+    },
+    "customer_id": {
+      "type": "string",
+      "pattern": "^[0-9]{6,}$",
+      "description": "Google-Ads-Customer-ID, REIN NUMERISCH (keine Bindestriche). Via list_accounts ermitteln."
+    },
+    "self_domain": {
+      "type": "string",
+      "description": "Eigene Domain (AIO-Citation-Check, Coverage). Default aus skill.config.json (selfDomain)."
+    },
+    "gsc_site": {
+      "type": "string",
+      "description": "GSC-Property (URL-Prefix oder sc-domain:…). Default aus skill.config.json (gscSite)."
+    },
+    "need_keyword_def": {
+      "type": "string",
+      "description": "Was als Need-Keyword zählt (informational/commercial/transactional-Fokus)."
+    },
+    "business_relevance": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0.6,
+      "description": "Faktor E im CIS + w4 im Opportunity-Score."
+    },
+    "serp_cap": {
+      "type": "integer",
+      "default": 50,
+      "description": "Hartes SerpApi-Lauf-Cap (Free-Plan-Schutz). Überschreibbar via env SERP_RUN_CAP."
+    },
+    "weights": {
+      "type": "object",
+      "description": "Override der Opportunity-Gewichte w1..w6 (Defaults in opportunity-scoring.md)."
+    },
+    "thresholds": {
+      "type": "object",
+      "description": "Override der Bucket-/Schwäche-Schwellen (overlap, weakness_min, qw_diff, qw_vol, mid_diff, mid_vol, auth_vol)."
+    },
+    "tier_a_extra": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Nischenspezifische STARKE Domains (zusätzlich zu skill.config.json tierADomains) für den Difficulty-Proxy/weak_domains. Bei vertikalen Nischen mit eigenen Spezial-Shops nach Phase 3 aus der SERP-Domain-Analyse befüllen, sonst unterschätzt der Proxy die Difficulty. Siehe opportunity-scoring.md §2."
+    }
+  }
+}
