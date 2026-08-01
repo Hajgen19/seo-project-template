@@ -37,15 +37,51 @@ Der `article-create`-Skill ruft `references/create-docx.py` auf, um pro Artikel 
 
 ## MCP-Konfiguration
 
-Folgende MCP-Server werden vom Repo verwendet (lokal zu installieren):
-- `google-ads`
-- `gsc`
-- `google-tag-manager`
-- `ga4-analytics`
+Die Google-Datenanbindung läuft über die vier gehosteten [mcpwerk](https://mcpwerk.com)-Server, vorkonfiguriert in der committeten [`.mcp.json`](.mcp.json):
 
-**Wichtig:** Diese vier MCP-Server sind **keine öffentlich verfügbaren Pakete**. Es gibt aktuell keinen Marketplace-Eintrag und keine fertigen Installer. Sie müssen zuerst lokal installiert und mit OAuth-Credentials/API-Keys versorgt werden, bevor Skills wie `ga4-reports` funktionieren. Ohne Installation passiert nichts (kein Fehler, aber auch keine Tools).
+| Server | URL | Daten |
+|---|---|---|
+| `mcpwerk-gsc` | `https://mcp.mcpwerk.com/gsc/mcp` | Google Search Console |
+| `mcpwerk-ga4` | `https://mcp.mcpwerk.com/ga4/mcp` | Google Analytics 4 |
+| `mcpwerk-ads` | `https://mcp.mcpwerk.com/ads/mcp` | Google Ads (inkl. Keyword Planner) |
+| `mcpwerk-gtm` | `https://mcp.mcpwerk.com/gtm/mcp` | Google Tag Manager |
 
-Dieses Repo setzt **keine** MCP-Verbindungen auf – das macht der User pro Projekt, außerhalb des Repos.
+Keine lokale Installation, keine API-Keys: Beim ersten Öffnen des Projekts fragt Claude Code, ob die Server aus der `.mcp.json` aktiviert werden sollen (Opt-in). Die Anmeldung beim jeweiligen Google-Konto läuft danach per OAuth über `/mcp`. Wer die Server nicht nutzen will, lehnt den Dialog einfach ab – alle Content-Skills funktionieren auch ohne.
+
+MCP-Tool-Namen in den Skills folgen dem Schema `mcp__<servername>__<tool>`, z. B. `mcp__mcpwerk-ga4__get_ga4_data`. Wer stattdessen eigene MCP-Server oder claude.ai-Connectoren nutzt, muss die Server- bzw. Präfix-Namen in den betroffenen Skills anpassen.
+
+## Projektgedächtnis
+
+Das Template hält Projektwissen auf vier Ebenen fest. Jede beantwortet eine andere Frage:
+
+| Ablage | Beantwortet | Lebensdauer | Im Repo? |
+|---|---|---|---|
+| `changelog/YYYY-MM-DD.md` | Was wurde wann getan? | permanent, append-only | ja |
+| `tmp/handoff/` | Wo steht die Arbeit gerade? | eine Session-Grenze | nein (gitignored) |
+| `docs/LEARNINGS.md` | Dieses Symptom gab es schon – was war die Ursache? | permanent, wird nachgeschlagen | nein (gitignored) |
+| `wissensbasis/` | Wer ist der Kunde, wie klingt er? | permanent | ja (im Kundenprojekt) |
+
+Faustregel bei der Zuordnung: **Interessiert es in einem Jahr noch jemanden → Changelog. Interessiert es nur die nächste Session → Handoff. Ist es ein gelöstes technisches Problem → Learnings.**
+
+### Kontext-Wächter (automatisch)
+
+Zwei Hooks in [`.claude/settings.json`](.claude/settings.json) verdrahten das Gedächtnis mit dem Session-Lebenszyklus:
+
+- **Stop-Hook** ([`context_guard.py`](.claude/hooks/context_guard.py)): Misst nach jeder Antwort den Kontextverbrauch anhand der echten Token-Zahlen aus dem Transcript. Ab **60 %** stößt er einmalig an: Handoff schreiben, Changelog nachziehen, Learnings prüfen. Ab **85 %** einmalig: Handoff aktualisieren. Das Bezugsfenster steht in `settings.json` unter `env.CLAUDE_CONTEXT_WINDOW` (Default `200000`; bei 1M-Kontext auf `1000000` setzen).
+- **SessionStart-Hook** ([`session_start.py`](.claude/hooks/session_start.py)): Lädt beim Start (und nach `/clear` bzw. einer Kompaktierung) das jüngste Übergabedokument aus `tmp/handoff/` und den Schnell-Lookup-Index aus `docs/LEARNINGS.md` in den Kontext.
+
+Beide Hooks setzen **Python 3.x** voraus (ohnehin Template-Voraussetzung wegen `python-docx`) und rufen es als `python` auf. Auf macOS/Linux-Systemen, die nur `python3` kennen: in `.claude/settings.json` an beiden Stellen `"command": "python"` durch `"command": "python3"` ersetzen. Fehlt Python ganz, zeigt Claude Code eine nicht blockierende Warnung und die Session läuft normal weiter, nur ohne Sicherheitsnetz. Ein manueller Handoff geht jederzeit über den `/handoff`-Skill.
+
+### Learning-Kriterien
+
+Ein technisches Problem gehört als Eintrag in `docs/LEARNINGS.md` (über den `knowledge-base-entry`-Skill), wenn **alle vier** zutreffen:
+
+1. Die Lösung brauchte mehr als einen Anlauf.
+2. Die Ursache war nicht aus der Fehlermeldung ablesbar.
+3. Das Problem ist wiederholbar (liegt am Werkzeug, an der Umgebung oder am CMS – nicht an einer einmaligen Konstellation).
+4. Die Lösung ist nicht trivial ableitbar.
+
+Leitfrage: *Würde ich beim nächsten Mal wieder genauso lange suchen?* Nicht hinein gehören: Tippfehler, einmalige Eigenheiten eines Kundendatensatzes, alles was bereits dokumentiert ist. Die Datei ist gitignored – Learnings bleiben beim jeweiligen Nutzer und wandern nie ins Repo.
 
 ## Regeln für Änderungen am Vorlage-Repo
 

@@ -2,7 +2,20 @@
 .claude/settings.local.json
 
 # Temporäre Dateien und Skripte (projektweit löschbar)
+# Deckt auch tmp/handoff/ ab – Übergabedokumente sind flüchtig und bleiben lokal
 tmp/
+
+# Wissensdatenbank mit Projekt-Learnings – entsteht beim jeweiligen Nutzer
+# über den knowledge-base-entry-Skill und wandert NIE ins Repo
+# (alle Datei-Varianten, die der Skill unterstützt)
+LEARNINGS.md
+LEARNINGS-CLAUDE-PROJECT.md
+KNOWLEDGE.md
+KNOWLEDGE-BASE.md
+docs/LEARNINGS.md
+docs/LEARNINGS-CLAUDE-PROJECT.md
+docs/KNOWLEDGE.md
+docs/KNOWLEDGE-BASE.md
 
 # Dependencies
 node_modules/
