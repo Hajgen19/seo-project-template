@@ -1,6 +1,6 @@
 # {{ Projekt-Name }} — Wissensdatenbank
 
-Wissensdatenbank für **{{ Projekt-Kurzbeschreibung }}**. Jeder Eintrag ist eine eigenständige Diagnose im Format: **Symptom → Kontext/Plattform → Root Cause → Fix → Diagnose-Befehl → Tags**.
+Wissensdatenbank für **{{ Projekt-Kurzbeschreibung }}**. Jeder Eintrag ist eine eigenständige Diagnose im Format: **Symptom → Kontext/Plattform → Root Cause → Fix → Diagnose-Befehl (optional) → Lesson (optional) → Tags**.
 
 Diese Datei ist als **Single-Source-of-Truth für Fehler-Lookups** gedacht. Volltext-Suche nach exakten Fehlermeldungen wird unterstützt.
 
@@ -30,7 +30,7 @@ Diese Datei ist als **Single-Source-of-Truth für Fehler-Lookups** gedacht. Voll
 ## Pflege dieser Datei
 
 - **Neuer Eintrag = neues `E-XYZ`-Label**, fortlaufend nummeriert (oder anderer Präfix, je nach Projekt-Konvention)
-- **Format strikt einhalten:** Symptom / Kontext / Root Cause / Fix / Diagnose-Befehl / Tags
+- **Format strikt einhalten:** Symptom / Kontext / Root Cause / Fix / Diagnose-Befehl (optional) / Lesson (optional) / Tags
 - **Symptom-Text wortwörtlich** vom Original übernehmen — Volltext-Suche ist der Hauptzugriffsweg
 - **Schnell-Lookup-Tabelle** oben aktualisieren, wenn ein neuer Fehler ein eindeutiges Symptom hat
 - **Tag-Index** ergänzen, wenn neue Domain-Tags entstehen
